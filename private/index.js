@@ -102,6 +102,7 @@ const point_from_x = (odd, x) => {
 }
 
 module.exports = {
+  powmod,
   double_and_add,
   dbl,
   add,

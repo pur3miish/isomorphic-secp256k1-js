@@ -59,16 +59,11 @@ const recover_public_key = async ({ data, signature }) => {
   const { n, mod, x, y } = secp256k1
   const { s, r, v } = signature
 
-  if (r > 0n && r < n)
-    throw new RangeError('Invalid signature R value exceeds limits')
-  if (s > 0n && s < n)
-    throw new RangeError('Invalid signature R value exceeds limits')
-  // assert v param.
   const i = BigInt(v)
   if (i > 3n) throw new Error('Invalid value for v.')
 
   const x_num = i >> 1n ? array_to_number(r) + n : array_to_number(r)
-  const R = point_from_x(i & 3n, x_num) // make infinity checks
+  const R = point_from_x(i & 3n, x_num)
   const e = array_to_number(await sha256(data))
   const eneg = get_mod(e * -1n, n)
   const rInv = mul_inverse(array_to_number(r), n)
