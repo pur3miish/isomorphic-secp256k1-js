@@ -1,4 +1,6 @@
 'use strict'
+const hmac_sha256 = require('universal-hmac-sha256-js')
+const { array_to_number, number_to_array } = require('./utils.js')
 
 const secp256k1 = Object.freeze({
   x: 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798n,
@@ -101,6 +103,56 @@ const point_from_x = (odd, x) => {
   return { x, y }
 }
 
+const get_signature = async (
+  T,
+  e,
+  d,
+  buffers,
+  racid = 0,
+  curve = secp256k1
+) => {
+  const { x, y, mod, n } = curve
+  const G = { x, y }
+  let r, s
+
+  const update_T = async ({ buf_h2b, buf_F }) => {
+    let buf_pad_v = Uint8Array.from([...buf_h2b, 0])
+    let buf_k = await hmac_sha256(buf_pad_v, buf_F)
+    let bufv = await hmac_sha256(buf_h2b, buf_k)
+    let bufv2 = await hmac_sha256(bufv, buf_k)
+    return array_to_number(bufv2)
+  }
+
+  let x1 = T - n
+  if (x1 >= 0n || 0n >= T)
+    return get_signature(await update_T(buffers), e, d, buffers)
+
+  let val = T
+  let Q = double_and_add(G, val, mod, n)
+  if (Q.x == 0n && Q.y == 0n)
+    return get_signature(await update_T(buffers), e, d, buffers)
+
+  // https://bitcoin.stackexchange.com/questions/83035/how-to-determine-first-byte-recovery-id-for-signatures-message-signing
+  let v = 0n
+  // if (Q.x > n) v = 2n
+
+  r = number_to_array(Q.x)
+  val = get_mod(mul_inverse(T, n) * (Q.x * d + e), n)
+
+  if (Q.y % 2n) racid = 1n | v
+  else racid = 0n | v
+
+  // Enforce low S values, see BIP62.  if x coordinate is larger than order n
+  if (val > n / 2n) {
+    val = n - val
+    racid = racid ^ 1n // XOR recovery id
+  }
+
+  s = number_to_array(val)
+
+  return { r, s, racid }
+}
+
 module.exports = {
   powmod,
   double_and_add,
@@ -109,5 +161,6 @@ module.exports = {
   mul_inverse,
   get_mod,
   secp256k1,
-  point_from_x
+  point_from_x,
+  get_signature
 }

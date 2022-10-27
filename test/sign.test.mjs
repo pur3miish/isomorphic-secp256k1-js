@@ -1,6 +1,5 @@
 import { deepStrictEqual } from 'assert'
-import sign from '../public/sign.js'
-import {} from '../public/utils.js'
+import sign from '../sign.js'
 
 const private_key = new Uint8Array([
   210, 101, 63, 247, 203, 178, 216, 255, 18, 154, 194, 126, 245, 120, 28, 230,
@@ -182,7 +181,7 @@ export default tests => {
     deepStrictEqual(sig.v, '1')
   })
 
-  tests.add('even more tests', async () => {
+  tests.add('Even more tests', async () => {
     const private_key = Uint8Array.from([
       210, 101, 63, 247, 203, 178, 216, 255, 18, 154, 194, 126, 245, 120, 28,
       230, 139, 37, 88, 196, 26, 116, 175, 31, 45, 220, 166, 53, 203, 238, 240,
@@ -209,4 +208,5 @@ export default tests => {
       ])
     )
   })
+  tests.add('random value', async () => {})
 }

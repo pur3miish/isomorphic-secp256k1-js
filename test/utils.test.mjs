@@ -1,7 +1,13 @@
 import { deepStrictEqual, rejects } from 'assert'
-import { mul_inverse, powmod } from '../private/index.js'
-import recover_public_key from '../public/recover_public_key.js'
-import sign from '../public/sign.js'
+import crypto from 'crypto'
+import {
+  get_signature,
+  mul_inverse,
+  powmod,
+  secp256k1
+} from '../private/index.js'
+import recover_public_key from '../recover_public_key.js'
+import sign from '../sign.js'
 
 export default tests => {
   tests.add('Ultils tests.', async () => {
@@ -25,6 +31,34 @@ export default tests => {
         v: -90n
       }
     })
+
+    get_signature(secp256k1.n * 2n, 0n, 0n, {
+      buf_h2b: Uint8Array.from(crypto.randomBytes(32)),
+      buf_F: Uint8Array.from(crypto.randomBytes(32))
+    })
+
+    get_signature(
+      secp256k1.n / 2n,
+      0n,
+      0n,
+      {
+        buf_h2b: Uint8Array.from(crypto.randomBytes(32)),
+        buf_F: Uint8Array.from(crypto.randomBytes(32))
+      },
+      1,
+      { ...secp256k1, x: 0n, y: 0n }
+    )
+
+    get_signature(
+      secp256k1.n * 2n,
+      secp256k1.n * 2n,
+      secp256k1.n * 2n,
+      {
+        buf_h2b: Uint8Array.from(crypto.randomBytes(32)),
+        buf_F: Uint8Array.from(crypto.randomBytes(32))
+      },
+      1
+    )
   })
 
   tests.add('private_key_negative_y', async () => {

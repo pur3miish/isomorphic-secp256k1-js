@@ -2,13 +2,8 @@
 
 const hmac_sha256 = require('universal-hmac-sha256-js')
 const sha256 = require('universal-sha256-js')
-const {
-  secp256k1,
-  double_and_add,
-  mul_inverse,
-  get_mod
-} = require('../private/index.js')
-const { array_to_number, number_to_array } = require('./utils.js')
+const { get_signature } = require('./private/index.js')
+const { array_to_number } = require('./private/utils.js')
 
 /**
  * Generates a digital signature on the secp256k1 Koblitz curve.
@@ -39,39 +34,7 @@ const { array_to_number, number_to_array } = require('./utils.js')
  * > The logged output is { r: [23, …, 89], s: [111, …, 142], v: 1 }
  */
 async function sign({ private_key, data }) {
-  let r, s, racid
   const hash = await sha256(data)
-
-  const validate_signature = (T, e, d) => {
-    const { x, y, mod, n } = secp256k1
-    const G = { x, y }
-
-    let x1 = T - n
-    if (x1 >= 0n || 0n >= T) return 1n
-    let val = T
-    let Q = double_and_add(G, val, mod, n)
-    if (Q.x == 0n && Q.y == 0n) return 1n // infinity
-
-    // https://bitcoin.stackexchange.com/questions/83035/how-to-determine-first-byte-recovery-id-for-signatures-message-signing
-    let v = 0n
-    if (Q.x > secp256k1.n) v = 2n
-
-    r = number_to_array(Q.x)
-    val = get_mod(mul_inverse(T, secp256k1.n) * (Q.x * d + e), secp256k1.n)
-
-    if (Q.y % 2n) racid = 1n | v
-    else racid = 0n | v
-
-    // Enforce low S values, see BIP62.  if x coordinate is larger than order n
-    if (val > secp256k1.n / 2n) {
-      val = secp256k1.n - val
-      racid = racid ^ 1n // XOR recovery id
-    }
-
-    s = number_to_array(val)
-
-    return 0
-  }
 
   // https://tools.ietf.org/html/rfc6979#section-3.2
   const deterministically_generate_k = async (hash, private_key, nonce = 0) => {
@@ -98,13 +61,7 @@ async function sign({ private_key, data }) {
     let e = array_to_number(hash)
     let d = array_to_number(private_key)
 
-    while (validate_signature(T, e, d)) {
-      let buf_pad_v = Uint8Array.from([...buf_h2b, 0])
-      let buf_k = await hmac_sha256(buf_pad_v, buf_F)
-      let bufv = await hmac_sha256(buf_h2b, buf_k)
-      let bufv2 = await hmac_sha256(bufv, buf_k)
-      T = array_to_number(bufv2)
-    }
+    const { r, s, racid } = await get_signature(T, e, d, { buf_h2b, buf_F })
 
     if (r[0] >= 0x80n || s[0] >= 0x80n)
       return deterministically_generate_k(hash, private_key, ++nonce)

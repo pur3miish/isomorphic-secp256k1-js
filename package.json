@@ -25,10 +25,10 @@
   "homepage": "https://github.com/pur3miish/universal-secp256k1-js#readme",
   "exports": {
     "./package.json": "./package.json",
-    ".": {
-     "require": "./index.js",
-     "import": "./index.mjs"
-    }
+      ".": "./index.js",
+      "./sign.js": "./sign.js",
+      "./recover_public_key.js": "./recover_public_key.js",
+      "./get_public_key.js": "./get_public_key.js"
   },
   "keywords": [
     "ECDSA",
@@ -53,7 +53,10 @@
     "not IE 11"
   ],
   "files": [
-    "public",
+    "get_public_key.js",
+    "index.js",
+    "recover_public_key.js",
+    "sign.js",
     "private"
   ],
   "author": "pur3miish",

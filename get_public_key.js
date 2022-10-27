@@ -1,7 +1,7 @@
 'use strict'
 
-const { double_and_add, secp256k1 } = require('../private/index.js')
-const { number_to_array, array_to_number } = require('./utils.js')
+const { double_and_add, secp256k1 } = require('./private/index.js')
+const { number_to_array, array_to_number } = require('./private/utils.js')
 /**
  * Generates a compressed public key for the `secp256k1` curve.
  * @kind function

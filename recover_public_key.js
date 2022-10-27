@@ -8,8 +8,8 @@ const {
   get_mod,
   add,
   double_and_add
-} = require('../private/index.js')
-const { array_to_number, number_to_array } = require('./utils.js')
+} = require('./private/index.js')
+const { array_to_number, number_to_array } = require('./private/utils.js')
 
 /**
  * Recovers a public key from a digital signature on the secp256k1 Koblitz curve.
