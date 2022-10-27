@@ -15,11 +15,11 @@ const { array_to_number } = require('./private/utils.js')
  * @returns {Signature} Digital signature object containing `r` and `s` and `v` values.
  * @example <caption>Ways to `import`.</caption>
  * ```js
- * import { sign } from 'universal-secp256k1-js'
+ * import { sign } from 'isomorphic-secp256k1-js'
  * ```
  * @example <caption>Ways to `require`.</caption>
  * ```js
- * const { sign } = require('universal-secp256k1-js')
+ * const { sign } = require('isomorphic-secp256k1-js')
  * ```
  *  @example <caption>Usage `sign`.</caption>
  * ```js

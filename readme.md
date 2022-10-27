@@ -2,18 +2,16 @@
 
 # Universal SEPC256K1 JS
 
-[![NPM Package](https://img.shields.io/npm/v/universal-secp256k1-js.svg)](https://www.npmjs.org/package/universal-secp256k1-js) [![CI status](https://github.com/pur3miish/universal-secp256k1-js/workflows/CI/badge.svg)](https://github.com/pur3miish/universal-secp256k1-js/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pur3miish/eos-ecc/blob/main/LICENSE)
+[![NPM Package](https://img.shields.io/npm/v/isomorphic-secp256k1-js.svg)](https://www.npmjs.org/package/isomorphic-secp256k1-js) [![CI status](https://github.com/pur3miish/isomorphic-secp256k1-js/workflows/CI/badge.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pur3miish/eos-ecc/blob/main/LICENSE)
 
 A ultra optimised [Universal](https://en.wikipedia.org/wiki/Isomorphic_JavaScript) JavaScript [Elliptic Curve Digital Signature Algorithm](https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm) (ECDSA) for the Koblitz secp256k1 curve.
 
 ### Features
 
-
-
 # Setup
 
 ```shell
-npm i universal-secp256k1-js
+npm i isomorphic-secp256k1-js
 ```
 
 # Suport
@@ -83,13 +81,13 @@ Recovers a public key from a digital signature on the secp256k1 Koblitz curve.
 _Ways to `import`._
 
 > ```js
-> import { recover_public_key } from 'universal-secp256k1-js'
+> import { recover_public_key } from 'isomorphic-secp256k1-js'
 > ```
 
 _Ways to `require`._
 
 > ```js
-> const { recover_public_key } = require('universal-secp256k1-js')
+> const { recover_public_key } = require('isomorphic-secp256k1-js')
 > ```
 
 _Usage `sign`._
@@ -139,13 +137,13 @@ Generates a digital signature on the secp256k1 Koblitz curve.
 _Ways to `import`._
 
 > ```js
-> import { sign } from 'universal-secp256k1-js'
+> import { sign } from 'isomorphic-secp256k1-js'
 > ```
 
 _Ways to `require`._
 
 > ```js
-> const { sign } = require('universal-secp256k1-js')
+> const { sign } = require('isomorphic-secp256k1-js')
 > ```
 
 _Usage `sign`._

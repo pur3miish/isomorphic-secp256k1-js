@@ -21,11 +21,11 @@ const { array_to_number, number_to_array } = require('./private/utils.js')
  * @returns {Uint8Array} recovered Public key.
  * @example <caption>Ways to `import`.</caption>
  * ```js
- * import { recover_public_key } from 'universal-secp256k1-js'
+ * import { recover_public_key } from 'isomorphic-secp256k1-js'
  * ```
  * @example <caption>Ways to `require`.</caption>
  * ```js
- * const { recover_public_key } = require('universal-secp256k1-js')
+ * const { recover_public_key } = require('isomorphic-secp256k1-js')
  * ```
  *  @example <caption>Usage `sign`.</caption>
  * ```js
