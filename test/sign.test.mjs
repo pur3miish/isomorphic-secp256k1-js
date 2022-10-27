@@ -120,7 +120,7 @@ export default tests => {
       ])
     )
 
-    deepStrictEqual(v, '0')
+    deepStrictEqual(v, 0)
 
     const gt0x80 = await sign({
       private_key: Uint8Array.from([
@@ -147,7 +147,7 @@ export default tests => {
           117, 74, 55, 83, 76, 159, 217, 167, 33, 55, 244, 36, 161, 89, 133, 89,
           167, 60, 97, 156, 142, 211, 135, 188, 248, 131, 7, 226, 5, 21, 35, 95
         ]),
-        v: '1'
+        v: 1
       },
       'Equal or greater than 0x80.'
     )
@@ -178,7 +178,7 @@ export default tests => {
     const sig = await sign({ data, private_key })
     deepStrictEqual(sig.r, r)
     deepStrictEqual(sig.s, s)
-    deepStrictEqual(sig.v, '1')
+    deepStrictEqual(sig.v, 1)
   })
 
   tests.add('Even more tests', async () => {
@@ -199,7 +199,7 @@ export default tests => {
       ])
     )
 
-    deepStrictEqual(sig.v, '1')
+    deepStrictEqual(sig.v, 1)
     deepStrictEqual(
       sig.s,
       Uint8Array.from([
