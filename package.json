@@ -1,13 +1,14 @@
 {
   "name": "isomorphic-secp256k1-js",
   "version": "1.0.0-rc",
-  "description": "An ultra lightweight zero dependency universal JavaScript (ECDSA) secp256k1 curve.",
+  "description": "An ultra lightweight (2 kbyte) pure JavaScript implimentation for the secp256k1 curve for node and browsers.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pur3miish/isomorphic-secp256k1-js.git"
   },
   "keywords": [
     "ECDSA",
+    "bitcoin",
     "universal",
     "blockchain",
     "digital",
@@ -18,7 +19,6 @@
     "crypto",
     "currency",
     "secp256k1",
-    "javascript",
     "dependencies",
     "lightweight"
   ],
@@ -54,13 +54,12 @@
   ],
   "exports": {
     "./package.json": "./package.json",
-      ".": "./index.js",
-      "./sign.js": "./sign.js",
-      "./recover_public_key.js": "./recover_public_key.js",
-      "./get_public_key.js": "./get_public_key.js"
+    ".": "./index.js",
+    "./sign.js": "./sign.js",
+    "./recover_public_key.js": "./recover_public_key.js",
+    "./get_public_key.js": "./get_public_key.js"
   },
   "sideEffects": false,
-
   "dependencies": {
     "universal-hmac-sha256-js": "^1.0.0",
     "universal-sha256-js": "^1.0.0"
