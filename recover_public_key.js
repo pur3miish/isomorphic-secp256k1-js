@@ -73,7 +73,7 @@ const recover_public_key = async ({ data, signature }) => {
   const p3 = add(p1, p2, mod)
   const P = double_and_add(p3, rInv, mod, n)
 
-  return Uint8Array.from([R.y % 2n ? 3 : 2, ...number_to_array(P.x)])
+  return Uint8Array.from([P.y % 2n ? 3 : 2, ...number_to_array(P.x)])
 }
 
 module.exports = recover_public_key
