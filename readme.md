@@ -8,8 +8,7 @@ A ultra optimised [Universal](https://en.wikipedia.org/wiki/Isomorphic_JavaScrip
 
 ### Features
 
-- Zero dependencies
-- Minimal
+
 
 # Setup
 

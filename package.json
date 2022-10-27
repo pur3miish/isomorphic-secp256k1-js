@@ -23,6 +23,8 @@
     "url": "https://github.com/pur3miish/universal-secp256k1-js/issues"
   },
   "homepage": "https://github.com/pur3miish/universal-secp256k1-js#readme",
+  "author": "pur3miish",
+  "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
       ".": "./index.js",
@@ -59,8 +61,6 @@
     "sign.js",
     "private"
   ],
-  "author": "pur3miish",
-  "license": "MIT",
   "dependencies": {
     "universal-hmac-sha256-js": "^1.0.0",
     "universal-sha256-js": "^1.0.0"
