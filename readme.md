@@ -4,9 +4,7 @@
 
 [![NPM Package](https://img.shields.io/npm/v/isomorphic-secp256k1-js.svg)](https://www.npmjs.org/package/isomorphic-secp256k1-js) [![CI status](https://github.com/pur3miish/isomorphic-secp256k1-js/workflows/CI/badge.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pur3miish/eos-ecc/blob/main/LICENSE)
 
-A ultra optimised [Universal](https://en.wikipedia.org/wiki/Isomorphic_JavaScript) JavaScript [Elliptic Curve Digital Signature Algorithm](https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm) (ECDSA) for the Koblitz secp256k1 curve.
-
-### Features
+A ultra lightweight (2 KB) [Universal](https://en.wikipedia.org/wiki/Isomorphic_JavaScript) JavaScript [Elliptic Curve Digital Signature Algorithm](https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm) (ECDSA) for the Koblitz secp256k1 curve.
 
 # Setup
 
@@ -40,13 +38,13 @@ Generates a compressed public key for the `secp256k1` curve.
 _Ways to `import`._
 
 > ```js
-> import { get_public_key } from 'universal-ecdsa'
+> import { get_public_key } from 'isomorphic-secp256k1-js'
 > ```
 
 _Ways to `require`._
 
 > ```js
-> const { get_public_key } = require('universal-ecdsa')
+> const { get_public_key } = require('isomorphic-secp256k1-js')
 > ```
 
 _Usage `get_public_key`._
