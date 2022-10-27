@@ -65,7 +65,7 @@ async function sign({ private_key, data }) {
 
     if (r[0] >= 0x80n || s[0] >= 0x80n)
       return deterministically_generate_k(hash, private_key, ++nonce)
-    else return { r, s, v: racid.toString() }
+    else return { r, s, v: Number(racid) }
   }
 
   return deterministically_generate_k(hash, private_key)
