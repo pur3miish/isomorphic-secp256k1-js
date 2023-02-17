@@ -1,5 +1,5 @@
 import { deepStrictEqual, rejects } from 'assert'
-import get_public_key from '../get_public_key.js'
+import get_public_key from '../get_public_key.mjs'
 
 export default tests => {
   // prettier-ignore

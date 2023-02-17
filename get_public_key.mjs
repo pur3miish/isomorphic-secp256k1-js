@@ -1,21 +1,12 @@
-'use strict'
+import { double_and_add, secp256k1 } from './private/index.mjs'
+import { array_to_number, number_to_array } from './private/utils.mjs'
 
-const { double_and_add, secp256k1 } = require('./private/index.js')
-const { number_to_array, array_to_number } = require('./private/utils.js')
 /**
  * Generates a compressed public key for the `secp256k1` curve.
  * @kind function
  * @name get_public_key
  * @param {Uint8Array} private_key secp256k1 valid private key.
  * @returns {Uint8Array} Public key.
- * @example <caption>Ways to `import`.</caption>
- * ```js
- * import { get_public_key } from 'isomorphic-secp256k1-js'
- * ```
- * @example <caption>Ways to `require`.</caption>
- * ```js
- * const { get_public_key } = require('isomorphic-secp256k1-js')
- * ```
  * @example <caption>Usage `get_public_key`.</caption>
  * ```js
  * const private_key = new Uint8Array([
@@ -38,4 +29,4 @@ function get_public_key(private_key) {
   return Uint8Array.from([R.y % 2n ? 3 : 2, ...number_to_array(R.x)])
 }
 
-module.exports = get_public_key
+export default get_public_key

@@ -1,15 +1,13 @@
-'use strict'
-
-const sha256 = require('universal-sha256-js')
-const {
-  secp256k1,
-  point_from_x,
-  mul_inverse,
-  get_mod,
+import sha256 from 'universal-sha256-js'
+import {
   add,
-  double_and_add
-} = require('./private/index.js')
-const { array_to_number, number_to_array } = require('./private/utils.js')
+  double_and_add,
+  get_mod,
+  mul_inverse,
+  point_from_x,
+  secp256k1
+} from './private/index.mjs'
+import { array_to_number, number_to_array } from './private/utils.mjs'
 
 /**
  * Recovers a public key from a digital signature on the secp256k1 Koblitz curve.
@@ -76,4 +74,4 @@ const recover_public_key = async ({ data, signature }) => {
   return Uint8Array.from([P.y % 2n ? 3 : 2, ...number_to_array(P.x)])
 }
 
-module.exports = recover_public_key
+export default recover_public_key

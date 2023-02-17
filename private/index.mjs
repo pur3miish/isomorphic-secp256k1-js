@@ -1,8 +1,7 @@
-'use strict'
-const hmac_sha256 = require('universal-hmac-sha256-js')
-const { array_to_number, number_to_array } = require('./utils.js')
+import hmac_sha256 from 'universal-hmac-sha256-js'
+import { array_to_number, number_to_array } from './utils.mjs'
 
-const secp256k1 = Object.freeze({
+export const secp256k1 = Object.freeze({
   x: 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798n,
   y: 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8n,
   mod: 115792089237316195423570985008687907853269984665640564039457584007908834671663n,
@@ -12,7 +11,7 @@ const secp256k1 = Object.freeze({
   h: 1n
 })
 
-const powmod = (number, exponent, m) => {
+export const powmod = (number, exponent, m) => {
   let r = 1n
   let b = number % m
   let e = exponent
@@ -26,7 +25,7 @@ const powmod = (number, exponent, m) => {
   return r
 }
 
-const get_mod = (val, mod) => ((val % mod) + mod) % mod
+export const get_mod = (val, mod) => ((val % mod) + mod) % mod
 
 /**
  * Calculate the Modular Multiplicative Inverse
@@ -37,7 +36,7 @@ const get_mod = (val, mod) => ((val % mod) + mod) % mod
  * @returns {bigint} the modular multiplicitve inverse of a `val`.
  * @ignore
  */
-function mul_inverse(val, mod) {
+export function mul_inverse(val, mod) {
   let dst, t, q
   let b = mod
   let a = get_mod(val, mod)
@@ -65,34 +64,34 @@ function mul_inverse(val, mod) {
 }
 
 /* Calculates a new point on the ECC curve. */
-const calc_new_point = (Q, P, λ, mod) => {
+export const calc_new_point = (Q, P, λ, mod) => {
   const x = get_mod(get_mod(λ * λ, mod) - P.x - Q.x, mod)
   const y = get_mod(get_mod((P.x - x) * λ, mod) - P.y, mod)
   return { x, y }
 }
 
 /* Addition of two coordinates on an ECC curve. */
-const add = (Q, P, mod) => {
+export const add = (Q, P, mod) => {
   const x = mul_inverse(P.x - Q.x, mod)
   const y = get_mod(get_mod(P.y - Q.y, mod) * x, mod) // slope
   return calc_new_point(Q, P, y, mod)
 }
 
 /* Doubling of two coordinates on an ECC curve. */
-const dbl = (G, mod) => {
+export const dbl = (G, mod) => {
   const numerator = get_mod(get_mod(G.x * G.x, mod) * 3n, mod)
   const denominator = get_mod(mul_inverse(2n * G.y, mod) * numerator, mod)
   return calc_new_point(G, G, denominator, mod)
 }
 
-const double_and_add = (G, k, mod, n) => {
+export const double_and_add = (G, k, mod, n) => {
   k = get_mod(k, n)
   if (k == 1n) return G
   else if (k % 2n) return add(double_and_add(G, k - 1n, mod, n), G, mod)
   else return double_and_add(dbl(G, mod), k / 2n, mod, n)
 }
 
-const point_from_x = (odd, x) => {
+export const point_from_x = (odd, x) => {
   const { mod, b } = secp256k1
   odd = BigInt(odd)
   const alpha = get_mod(BigInt(x) ** 3n + b, mod)
@@ -103,7 +102,7 @@ const point_from_x = (odd, x) => {
   return { x, y }
 }
 
-const get_signature = async (
+export const get_signature = async (
   T,
   e,
   d,
@@ -151,16 +150,4 @@ const get_signature = async (
   s = number_to_array(val)
 
   return { r, s, racid }
-}
-
-module.exports = {
-  powmod,
-  double_and_add,
-  dbl,
-  add,
-  mul_inverse,
-  get_mod,
-  secp256k1,
-  point_from_x,
-  get_signature
 }

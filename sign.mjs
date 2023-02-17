@@ -1,9 +1,7 @@
-'use strict'
-
-const hmac_sha256 = require('universal-hmac-sha256-js')
-const sha256 = require('universal-sha256-js')
-const { get_signature } = require('./private/index.js')
-const { array_to_number } = require('./private/utils.js')
+import hmac_sha256 from 'universal-hmac-sha256-js'
+import sha256 from 'universal-sha256-js'
+import { get_signature } from './private/index.mjs'
+import { array_to_number } from './private/utils.mjs'
 
 /**
  * Generates a digital signature on the secp256k1 Koblitz curve.
@@ -35,7 +33,6 @@ const { array_to_number } = require('./private/utils.js')
  */
 async function sign({ private_key, data }) {
   const hash = await sha256(data)
-
   // https://tools.ietf.org/html/rfc6979#section-3.2
   const deterministically_generate_k = async (hash, private_key, nonce = 0) => {
     let msg_digest = nonce
@@ -71,4 +68,4 @@ async function sign({ private_key, data }) {
   return deterministically_generate_k(hash, private_key)
 }
 
-module.exports = sign
+export default sign

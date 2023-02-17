@@ -1,15 +1,23 @@
 # Isomorphic-secp256k1-js
 
-# 1.0.2
+## 2.0.0
 
-- readme typeo fixes
+### Major
 
-# 1.0.1
+- Changed to ESM from CJS.
+
+## 1.0.2
 
 ## Patch
 
+- readme typeo fixes
+
+## 1.0.1
+
+### Patch
+
 - recovery public key bug fixes.
 
-# 1.0.0
+## 1.0.0
 
 - Initial release

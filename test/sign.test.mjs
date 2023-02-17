@@ -1,5 +1,5 @@
 import { deepStrictEqual } from 'assert'
-import sign from '../sign.js'
+import sign from '../sign.mjs'
 
 const private_key = new Uint8Array([
   210, 101, 63, 247, 203, 178, 216, 255, 18, 154, 194, 126, 245, 120, 28, 230,

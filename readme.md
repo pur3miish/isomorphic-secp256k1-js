@@ -2,158 +2,33 @@
 
 # Isomorphic SEPC256K1 JS
 
-[![NPM Package](https://img.shields.io/npm/v/isomorphic-secp256k1-js.svg)](https://www.npmjs.org/package/isomorphic-secp256k1-js) [![CI status](https://github.com/pur3miish/isomorphic-secp256k1-js/workflows/CI/badge.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pur3miish/eos-ecc/blob/main/LICENSE)
+[![NPM Package](https://img.shields.io/npm/v/isomorphic-secp256k1-js.svg)](https://www.npmjs.org/package/isomorphic-secp256k1-js) [![CI status](https://github.com/pur3miish/isomorphic-secp256k1-js/workflows/CI/badge.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/blob/main/LICENSE)
 
 A ultra lightweight (2 KB) [Universal](https://en.wikipedia.org/wiki/Isomorphic_JavaScript) JavaScript [Elliptic Curve Digital Signature Algorithm](https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm) (ECDSA) for the Koblitz secp256k1 curve.
 
-# Setup
+## Installation
 
-```shell
+For [Node.js](https://nodejs.org), to install [`isomorphic-secp256k1-js`](https://npm.im/isomorphic-secp256k1-js) run:
+
+```sh
 npm i isomorphic-secp256k1-js
 ```
 
-# Suport
-
-- Node.js `>=15`
-- Browser `defaults, no IE 11`
-
-# API
-
-- [function get_public_key](#function-get_public_key)
-- [function recover_public_key](#function-recover_public_key)
-- [function sign](#function-sign)
-
-## function get_public_key
-
-Generates a compressed public key for the `secp256k1` curve.
-
-| Parameter     | Type       | Description                  |
-| :------------ | :--------- | :--------------------------- |
-| `private_key` | Uint8Array | secp256k1 valid private key. |
-
-**Returns:** Uint8Array — Public key.
-
-### Examples
-
-_Ways to `import`._
-
-> ```js
-> import { get_public_key } from 'isomorphic-secp256k1-js'
-> ```
-
-_Ways to `require`._
-
-> ```js
-> const { get_public_key } = require('isomorphic-secp256k1-js')
-> ```
-
-_Usage `get_public_key`._
-
-> ```js
-> const private_key = new Uint8Array([
->   210, 101, 63, 247, 203, 178, 216, 255, 18, 154, 194, 126, 245, 120, 28, 230,
->   139, 37, 88, 196, 26, 116, 175, 31, 45, 220, 166, 53, 203, 238, 240, 125
-> ])
+> **Note**
 >
-> get_public_key(private_key).then(console.log) // compressed public key.
-> ```
->
-> > The logged output was \[2, …, 207].
+> As this package is [ESM](https://nodejs.org/docs/latest-v16.x/api/esm.html) if you need to require it in a [Common JS](https://nodejs.org/docs/latest-v16.x/api/modules.html) package, then you can require like this:
 
----
+## Requirements
 
-## function recover_public_key
+Supported runtime environments:
 
-Recovers a public key from a digital signature on the secp256k1 Koblitz curve.
+- [Node.js](https://nodejs.org) versions `>=16.0.0`.
+- Browsers matching the [Browserslist](https://browsersl.ist) query [`> 0.5%, not OperaMini all, not dead`](https://browsersl.ist/?q=%3E+0.5%25%2C+not+OperaMini+all%2C+not+dead).
 
-| Parameter       | Type      | Description                                    |
-| :-------------- | :-------- | :--------------------------------------------- |
-| `Arg`           | object    | Argument.                                      |
-| `Arg.signature` | Uin8Array | secp256k1 signature.                           |
-| `Arg.data`      | Uin8Array | Data that was signed to produce the signature. |
+## Exports
 
-**Returns:** Uint8Array — recovered Public key.
+The [npm](https://npmjs.com) package [`Isomorphic SEPC256K1 JS`](https://npm.im/isomorphic-secp25k1-js) features [optimal JavaScript module design](https://jaydenseric.com/blog/optimal-javascript-module-design). It doesn’t have a main index module, so use deep imports from the ECMAScript modules that are exported via the [`package.json`](./package.json) field [`exports`](https://nodejs.org/api/packages.html#exports):
 
-### Examples
-
-_Ways to `import`._
-
-> ```js
-> import { recover_public_key } from 'isomorphic-secp256k1-js'
-> ```
-
-_Ways to `require`._
-
-> ```js
-> const { recover_public_key } = require('isomorphic-secp256k1-js')
-> ```
-
-_Usage `sign`._
-
-> ```js
-> const data = Uint8Array.from([
->   2, 33, 65, 233, 23, 23, 123, 244, 23, 23, 123, 244
-> ])
->
-> const signature = {
->   r: number_to_array(
->     50172533143525448505731076092836454339589141171079665638497512992118311974590n
->   ),
->   s: number_to_array(
->     3372897403575535231543296615264124933490702058654620386530787287980439847001n
->   ),
->   v: 0
-> }
->
-> const private_key = new Uint8Array([
->   210, 101, 63, 247, 203, 178, 216, 255, 18, 154, 194, 126, 245, 120, 28, 230,
->   139, 37, 88, 196, 26, 116, 175, 31, 45, 220, 166, 53, 203, 238, 240, 125
-> ])
->
-> const data = Uint8Array.from([104, 101, 108, 108, 111])
-> sign({ data, private_key }).then(console.log)
-> ```
->
-> > The logged output is \[2, 192, 222, 210, …]
-
----
-
-## function sign
-
-Generates a digital signature on the secp256k1 Koblitz curve.
-
-| Parameter         | Type      | Description            |
-| :---------------- | :-------- | :--------------------- |
-| `Arg`             | object    | Argument.              |
-| `Arg.private_key` | Uin8Array | secp256k1 private key. |
-| `Arg.data`        | Uin8Array | Data to sign.          |
-
-**Returns:** Signature — Digital signature object containing `r` and `s` and `v` values.
-
-### Examples
-
-_Ways to `import`._
-
-> ```js
-> import { sign } from 'isomorphic-secp256k1-js'
-> ```
-
-_Ways to `require`._
-
-> ```js
-> const { sign } = require('isomorphic-secp256k1-js')
-> ```
-
-_Usage `sign`._
-
-> ```js
-> const private_key = new Uint8Array([
->   210, 101, 63, 247, 203, 178, 216, 255, 18, 154, 194, 126, 245, 120, 28, 230,
->   139, 37, 88, 196, 26, 116, 175, 31, 45, 220, 166, 53, 203, 238, 240, 125
-> ])
->
-> const data = Uint8Array.from([104, 101, 108, 108, 111])
-> sign({ data, private_key }).then(console.log)
-> ```
->
-> > The logged output is { r: \[23, …, 89], s: \[111, …, 142], v: 1 }
+- [`recover_public_key.mjs`](./recover_public_key.mjs)
+- [`sign.mjs`](./sign.mjs)
+- [`get_public_key.mjs`](./sign.mjs)

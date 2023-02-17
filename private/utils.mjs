@@ -1,6 +1,4 @@
-'use strict'
-
-const number_to_array = number => {
+export const number_to_array = number => {
   let hn = number.toString(16)
   hn = hn.length % 2 ? hn.padStart(hn.length + 1, '0') : hn
 
@@ -9,15 +7,10 @@ const number_to_array = number => {
   )
 }
 
-const array_to_number = array =>
+export const array_to_number = array =>
   BigInt(
     `0x${array.reduce(
       (acc, i) => (acc += i.toString(16).padStart(2, '0')),
       ''
     )}`
   )
-
-module.exports = {
-  number_to_array,
-  array_to_number
-}

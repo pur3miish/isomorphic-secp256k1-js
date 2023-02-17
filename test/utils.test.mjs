@@ -5,9 +5,9 @@ import {
   mul_inverse,
   powmod,
   secp256k1
-} from '../private/index.js'
-import recover_public_key from '../recover_public_key.js'
-import sign from '../sign.js'
+} from '../private/index.mjs'
+import recover_public_key from '../recover_public_key.mjs'
+import sign from '../sign.mjs'
 
 export default tests => {
   tests.add('Ultils tests.', async () => {

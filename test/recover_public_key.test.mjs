@@ -1,6 +1,6 @@
 import { deepStrictEqual } from 'assert'
-import { number_to_array } from '../private/utils.js'
-import recover_public_key from '../recover_public_key.js'
+import { number_to_array } from '../private/utils.mjs'
+import recover_public_key from '../recover_public_key.mjs'
 
 const public_key = Uint8Array.from([
   2, 192, 222, 210, 188, 31, 19, 5, 251, 15, 170, 197, 230, 192, 62, 227, 161,

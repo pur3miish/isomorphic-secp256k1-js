@@ -1,6 +1,6 @@
 {
   "name": "isomorphic-secp256k1-js",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "An ultra lightweight (2 kbyte) pure JavaScript implimentation for the secp256k1 curve for node and browsers.",
   "repository": {
     "type": "git",
@@ -28,8 +28,7 @@
     "url": "https://github.com/pur3miish/isomorphic-secp256k1-js/issues"
   },
   "scripts": {
-    "prepare": "npm run prepare:jsdoc && npm run prepare:prettier",
-    "prepare:jsdoc": "jsdoc-md",
+    "prepare": "npm run prepare:prettier",
     "prepare:prettier": "prettier --write readme.md",
     "test": "npm run test:eslint && npm run test:prettier && npm run test:api",
     "test:api": "coverage-node test/index.test.mjs",
@@ -39,25 +38,23 @@
   },
   "homepage": "https://github.com/pur3miish/isomorphic-secp256k1-js#readme",
   "engines": {
-    "node": ">=15"
+    "node": "^16.0.0 || >= 18.0.0"
   },
   "browserslist": [
     "defaults",
     "not IE 11"
   ],
   "files": [
-    "get_public_key.js",
-    "index.js",
-    "recover_public_key.js",
-    "sign.js",
-    "private"
+    "get_public_key.mjs",
+    "recover_public_key.mjs",
+    "sign.mjs",
+    "private/*.mjs"
   ],
   "exports": {
     "./package.json": "./package.json",
-    ".": "./index.js",
-    "./sign.js": "./sign.js",
-    "./recover_public_key.js": "./recover_public_key.js",
-    "./get_public_key.js": "./get_public_key.js"
+    "./sign.mjs": "./sign.mjs",
+    "./recover_public_key.mjs": "./recover_public_key.mjs",
+    "./get_public_key.mjs": "./get_public_key.mjs"
   },
   "sideEffects": false,
   "dependencies": {
