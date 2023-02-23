@@ -16,7 +16,7 @@ For [Node.js](https://nodejs.org), to install [`isomorphic-secp256k1-js`](https:
 npm i isomorphic-secp256k1-js
 ```
 
-For [Deno.js](https://deno.land), at the root of your project add a `deno.json` file and include these import paths:
+For [Deno.js](https://deno.land/x/secp256k1js), at the root of your project add a `deno.json` file and include these import paths:
 
 ```json
 {
@@ -26,6 +26,14 @@ For [Deno.js](https://deno.land), at the root of your project add a `deno.json` 
     "universal-hmac-sha256-js/hmac-sha256-node.mjs": "https://deno.land/x/hmacsha256/hmac-sha256-deno.mjs"
   }
 }
+```
+
+Then import:
+
+```js
+import recover_public_key from "https://deno.land/x/secp256k1js/recover_public_key.mjs";
+import sign from "https://deno.land/x/secp256k1js/sign.mjs";
+import get_public_key from "https://deno.land/x/secp256k1js/get_public_key.mjs";
 ```
 
 ## Examples
