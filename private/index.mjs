@@ -1,4 +1,4 @@
-import hmac_sha256 from "universal-hmac-sha256-js/hmac-sha256.mjs";
+import hmac_sha256 from "universal-hmac-sha256-js/hmac-sha256-node.mjs";
 
 import { array_to_number, number_to_array } from "./utils.mjs";
 

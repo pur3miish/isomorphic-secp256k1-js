@@ -1,6 +1,6 @@
 // @ts-check
 
-import hmac_sha256 from "universal-hmac-sha256-js/hmac-sha256.mjs";
+import hmac_sha256 from "universal-hmac-sha256-js/hmac-sha256-node.mjs";
 import sha256 from "universal-sha256-js/sha256.mjs";
 
 import { get_signature } from "./private/index.mjs";

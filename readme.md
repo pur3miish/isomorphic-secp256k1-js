@@ -16,12 +16,16 @@ For [Node.js](https://nodejs.org), to install [`isomorphic-secp256k1-js`](https:
 npm i isomorphic-secp256k1-js
 ```
 
-For [Deno.js](https://deno.land), use the deep imports:
+For [Deno.js](https://deno.land), at the root of your project add a `deno.json` file and include these import paths:
 
-```js
-import recover_public_key from "https://deno.land/x/secp256k1js/recover_public_key.mjs";
-import sign from "https://deno.land/x/secp256k1js/sign.mjs";
-import get_public_key from "https://deno.land/x/secp256k1js/get_public_key.mjs";
+```json
+{
+  // This will import the correct dependencies.
+  "imports": {
+    "universal-sha256-js/": "https://deno.land/x/sha256js/",
+    "universal-hmac-sha256-js/": "https://deno.land/x/hmacsha256@nodecrypto/"
+  }
+}
 ```
 
 ## Examples
@@ -34,7 +38,8 @@ const private_key = new Uint8Array([
   139, 37, 88, 196, 26, 116, 175, 31, 45, 220, 166, 53, 203, 238, 240, 125,
 ]);
 
-get_public_key(private_key).then(console.log); // compressed public key.
+// Compressed public key.
+console.log(get_public_key(private_key));
 ```
 
 Generate a secp25k1 digital siganture.

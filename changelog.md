@@ -1,5 +1,11 @@
 # Isomorphic-secp256k1-js
 
+## 2.0.1
+
+## Patch
+
+- Dependency updates
+
 ## 2.0.0
 
 ### Major
