@@ -1,10 +1,10 @@
-import { double_and_add, secp256k1 } from './private/index.mjs'
-import { array_to_number, number_to_array } from './private/utils.mjs'
+// @ts-check
+
+import { double_and_add, secp256k1 } from "./private/index.mjs";
+import { array_to_number, number_to_array } from "./private/utils.mjs";
 
 /**
  * Generates a compressed public key for the `secp256k1` curve.
- * @kind function
- * @name get_public_key
  * @param {Uint8Array} private_key secp256k1 valid private key.
  * @returns {Uint8Array} Public key.
  * @example <caption>Usage `get_public_key`.</caption>
@@ -19,14 +19,14 @@ import { array_to_number, number_to_array } from './private/utils.mjs'
  * > The logged output was [2, …, 207].
  */
 function get_public_key(private_key) {
-  const { x, y, n, mod } = secp256k1
+  const { x, y, n, mod } = secp256k1;
 
-  const k = array_to_number(private_key)
+  const k = array_to_number(private_key);
 
-  if (n < k) throw new RangeError('Invalid private key size')
-  const R = double_and_add({ x, y }, k, mod, n)
+  if (n < k) throw new RangeError("Invalid private key size");
+  const R = double_and_add({ x, y }, k, mod, n);
 
-  return Uint8Array.from([R.y % 2n ? 3 : 2, ...number_to_array(R.x)])
+  return Uint8Array.from([R.y % 2n ? 3 : 2, ...number_to_array(R.x)]);
 }
 
-export default get_public_key
+export default get_public_key;

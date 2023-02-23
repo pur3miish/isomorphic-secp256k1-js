@@ -5,6 +5,7 @@
 ### Major
 
 - Changed to ESM from CJS.
+- Added support for Deno.
 
 ## 1.0.2
 

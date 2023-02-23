@@ -1,31 +1,36 @@
-import sha256 from 'universal-sha256-js'
+// @ts-check
+
+import sha256 from "universal-sha256-js/sha256.mjs";
+
 import {
   add,
   double_and_add,
   get_mod,
   mul_inverse,
   point_from_x,
-  secp256k1
-} from './private/index.mjs'
-import { array_to_number, number_to_array } from './private/utils.mjs'
+  secp256k1,
+} from "./private/index.mjs";
+import { array_to_number, number_to_array } from "./private/utils.mjs";
+
+/**
+ * @typedef {Object} Signature
+ * @property {Uint8Array} r
+ * @property {Uint8Array} s
+ * @property {Number} v
+ */
+
+/**
+ * Recovery argument contains a {@link Signature} and the data.
+ * @typedef {Object} RecoverArg
+ * @property {Signature} signature
+ * @property {Uint8Array} data
+ */
 
 /**
  * Recovers a public key from a digital signature on the secp256k1 Koblitz curve.
- * @kind function
- * @name recover_public_key
- * @param {object} Arg Argument.
- * @param {Uin8Array} Arg.signature secp256k1 signature.
- * @param {Uin8Array} Arg.data Data that was signed to produce the signature.
- * @returns {Uint8Array} recovered Public key.
- * @example <caption>Ways to `import`.</caption>
- * ```js
- * import { recover_public_key } from 'isomorphic-secp256k1-js'
- * ```
- * @example <caption>Ways to `require`.</caption>
- * ```js
- * const { recover_public_key } = require('isomorphic-secp256k1-js')
- * ```
- *  @example <caption>Usage `sign`.</caption>
+ * @param {RecoverArg} Arg {@link RecoverArg}
+ * @returns {Promise<Uint8Array>} recovered Public key.
+ * @example <caption>Usage `sign`.</caption>
  * ```js
  *
  *  const data = Uint8Array.from([
@@ -51,27 +56,26 @@ import { array_to_number, number_to_array } from './private/utils.mjs'
  *  sign({ data, private_key }).then(console.log)
  *
  * ```
- * > The logged output is  [2, 192, 222, 210, …]
  */
-const recover_public_key = async ({ data, signature }) => {
-  const { n, mod, x, y } = secp256k1
-  const { s, r, v } = signature
+async function recover_public_key({ data, signature }) {
+  const { n, mod, x, y } = secp256k1;
+  const { s, r, v } = signature;
 
-  const i = BigInt(v)
-  if (i > 3n) throw new Error('Invalid value for v.')
+  const i = BigInt(v);
+  if (i > 3n) throw new Error("Invalid value for v.");
 
-  const x_num = i >> 1n ? array_to_number(r) + n : array_to_number(r)
-  const R = point_from_x(i & 3n, x_num)
-  const e = array_to_number(await sha256(data))
-  const eneg = get_mod(e * -1n, n)
-  const rInv = mul_inverse(array_to_number(r), n)
+  const x_num = i >> 1n ? array_to_number(r) + n : array_to_number(r);
+  const R = point_from_x(i & 3n, x_num);
+  const e = array_to_number(await sha256(data));
+  const eneg = get_mod(e * -1n, n);
+  const rInv = mul_inverse(array_to_number(r), n);
 
-  const p1 = double_and_add(R, array_to_number(s), mod, n)
-  const p2 = double_and_add({ x, y }, eneg, mod, n)
-  const p3 = add(p1, p2, mod)
-  const P = double_and_add(p3, rInv, mod, n)
+  const p1 = double_and_add(R, array_to_number(s), mod, n);
+  const p2 = double_and_add({ x, y }, eneg, mod, n);
+  const p3 = add(p1, p2, mod);
+  const P = double_and_add(p3, rInv, mod, n);
 
-  return Uint8Array.from([P.y % 2n ? 3 : 2, ...number_to_array(P.x)])
+  return Uint8Array.from([P.y % 2n ? 3 : 2, ...number_to_array(P.x)]);
 }
 
-export default recover_public_key
+export default recover_public_key;

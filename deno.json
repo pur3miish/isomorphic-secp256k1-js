@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "sha256/": "https://deno.land/x/sha256js/",
+    "hmacsha256/": "https://deno.land/x/hmacsha256/"
+  }
+}
