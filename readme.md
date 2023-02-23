@@ -20,9 +20,9 @@ For [Deno.js](https://deno.land), at the root of your project add a `deno.json` 
 
 ```json
 {
-  // This will import the correct dependencies.
   "imports": {
     "universal-sha256-js/": "https://deno.land/x/sha256js/",
+    "universal-hmac-sha256-js/": "https://deno.land/x/hmacsha256/",
     "universal-hmac-sha256-js/hmac-sha256-node.mjs": "https://deno.land/x/hmacsha256/hmac-sha256-deno.mjs"
   }
 }
