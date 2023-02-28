@@ -1,5 +1,11 @@
 # Isomorphic-secp256k1-js
 
+## 2.0.4
+
+### Patch
+
+- dependency updates
+
 ## 2.0.3
 
 - Added deno imports to [readme](readme.md)
