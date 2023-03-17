@@ -8,6 +8,42 @@ An ultra lightweight [Universal](https://en.wikipedia.org/wiki/Isomorphic_JavaSc
 
 Cross platform support for [Node.js](https://nodejs.org) and [Deno](https://deno.land).
 
+## Exports
+
+The [npm](https://npmjs.com) package [`isomorphic-secp256k1-js`](https://npm.im/isomorphic-secp25k1-js) features [optimal JavaScript module design](https://jaydenseric.com/blog/optimal-javascript-module-design). It doesn’t have a main index module, so use deep imports from the ECMAScript modules that are exported via the [`package.json`](./package.json) field [`exports`](https://nodejs.org/api/packages.html#exports):
+
+- [`recover_public_key.mjs`](./recover_public_key.mjs)
+- [`sign.mjs`](./sign.mjs)
+- [`get_public_key.mjs`](./get_public_key.mjs)
+
+## Impact on your bundle
+
+Using the [esbuild](https://esbuild.github.io/) minify and gzip you can generate a digital signature with less than **1.6kb** impact to your bundle.
+
+```shell
+cat dist/sign.mjs | wc
+  1      86    2898
+
+cat dist/sign.mjs.zip | wc
+  10      59    1604
+```
+
+```shell
+cat dist/get_public_key.mjs | wc
+  1      27    1389
+
+cat dist/get_public_key.mjs.zip | wc
+  3      29    1006
+```
+
+```shell
+cat dist/recover_public_key.mjs | wc
+  1      50    2055
+
+cat dist/recover_public_key.mjs.zip | wc
+  4      38    1360
+```
+
 ## Installation
 
 For [Node.js](https://nodejs.org), to install [`isomorphic-secp256k1-js`](https://npm.im/isomorphic-secp256k1-js) run:
@@ -50,7 +86,7 @@ const private_key = new Uint8Array([
 console.log(get_public_key(private_key));
 ```
 
-Generate a secp25k1 digital siganture.
+Generate a secp25k1 digital signature.
 
 ```js
 const private_key = new Uint8Array([
@@ -100,11 +136,3 @@ Supported runtime environments:
 - [Node.js](https://nodejs.org) versions `>=16.0.0`.
 - Browsers matching the [Browserslist](https://browsersl.ist) query [`> 0.5%, not OperaMini all, not dead`](https://browsersl.ist/?q=%3E+0.5%25%2C+not+OperaMini+all%2C+not+dead).
 - [Deno](https://deno.land) versions `^1.0.0`.
-
-## Exports
-
-The [npm](https://npmjs.com) package [`isomorphic-secp256k1-js`](https://npm.im/isomorphic-secp25k1-js) features [optimal JavaScript module design](https://jaydenseric.com/blog/optimal-javascript-module-design). It doesn’t have a main index module, so use deep imports from the ECMAScript modules that are exported via the [`package.json`](./package.json) field [`exports`](https://nodejs.org/api/packages.html#exports):
-
-- [`recover_public_key.mjs`](./recover_public_key.mjs)
-- [`sign.mjs`](./sign.mjs)
-- [`get_public_key.mjs`](./sign.mjs)
