@@ -1,7 +1,5 @@
 // @ts-check
 
-import sha256 from "universal-sha256-js/sha256.mjs";
-
 import {
   add,
   double_and_add,
@@ -22,8 +20,8 @@ import { array_to_number, number_to_array } from "./private/utils.mjs";
 /**
  * Recovery argument contains a {@link Signature} and the data.
  * @typedef {Object} RecoverArg
- * @property {Signature} signature
- * @property {Uint8Array} data
+ * @property {Signature} signature secp256k1 signature.
+ * @property {Uint8Array} hash The 32 byte hash that was signed.
  */
 
 /**
@@ -57,7 +55,7 @@ import { array_to_number, number_to_array } from "./private/utils.mjs";
  *
  * ```
  */
-async function recover_public_key({ data, signature }) {
+async function recover_public_key({ hash, signature }) {
   const { n, mod, x, y } = secp256k1;
   const { s, r, v } = signature;
 
@@ -66,7 +64,7 @@ async function recover_public_key({ data, signature }) {
 
   const x_num = i >> 1n ? array_to_number(r) + n : array_to_number(r);
   const R = point_from_x(i & 3n, x_num);
-  const e = array_to_number(await sha256(data));
+  const e = array_to_number(hash);
   const eneg = get_mod(e * -1n, n);
   const rInv = mul_inverse(array_to_number(r), n);
 

@@ -94,7 +94,10 @@ const private_key = new Uint8Array([
   139, 37, 88, 196, 26, 116, 175, 31, 45, 220, 166, 53, 203, 238, 240, 125,
 ]);
 
-const data = Uint8Array.from([104, 101, 108, 108, 111]);
+const data = Uint8Array.from([
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+  22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+]);
 sign({ data, private_key }).then(console.log);
 ```
 
@@ -112,7 +115,7 @@ sign({ data, private_key }).then(console.log);
   const { number_to_array } = await import("./private/utils.mjs");
 
   const key_pair = await recover_public_key({
-    data: Uint8Array.from([2, 33, 65, 233, 23, 23, 123, 244, 23, 23, 123, 244]),
+    data,
     signature: {
       r: number_to_array(
         50172533143525448505731076092836454339589141171079665638497512992118311974590n

@@ -16,7 +16,7 @@ import { array_to_number } from "./private/utils.mjs";
 /**
  * @typedef {Object} SignArg
  * @property {Uint8Array} private_key secp256k1 private key.
- * @property {Uint8Array} data Data to sign.
+ * @property {Uint8Array} hash 32 byte hash to sign.
  */
 /**
  * Generates a digital signature on the secp256k1 Koblitz curve.
@@ -34,8 +34,7 @@ import { array_to_number } from "./private/utils.mjs";
  * ```
  * > The logged output is { r: [23, …, 89], s: [111, …, 142], v: 1 }
  */
-async function sign({ private_key, data }) {
-  const hash = await sha256(data);
+async function sign({ private_key, hash }) {
   /**
    * Deterministically generate `k` via the [IETF-rfc6979](https://tools.ietf.org/html/rfc6979#section-3.2)
    * @param {Uint8Array} hash

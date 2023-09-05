@@ -1,4 +1,5 @@
 import { deepStrictEqual } from "assert";
+import sha256 from "universal-sha256-js/sha256.mjs";
 
 import sign from "../sign.mjs";
 
@@ -9,8 +10,9 @@ const private_key = new Uint8Array([
 
 export default (tests) => {
   tests.add("ECDSA test.", async () => {
-    const data = Uint8Array.from([104, 101, 108, 108, 111]);
-    sign({ private_key, data }).then(({ r, s }) => {
+    const hash = await sha256(Uint8Array.from([104, 101, 108, 108, 111]));
+
+    sign({ private_key, hash }).then(({ r, s }) => {
       deepStrictEqual(
         r,
         Uint8Array.from([
@@ -32,11 +34,13 @@ export default (tests) => {
   });
 
   tests.add("ECDSA test 2 iterations.", async () => {
-    const data = Uint8Array.from([
-      75, 64, 14, 80, 102, 145, 71, 88, 235, 218, 14, 154, 227, 28, 80, 119, 99,
-      141, 64, 3, 32, 154, 180, 208, 111, 159, 242, 81, 40, 228, 231, 137,
-    ]);
-    sign({ private_key, data }).then(({ r, s }) => {
+    const hash = await sha256(
+      Uint8Array.from([
+        75, 64, 14, 80, 102, 145, 71, 88, 235, 218, 14, 154, 227, 28, 80, 119,
+        99, 141, 64, 3, 32, 154, 180, 208, 111, 159, 242, 81, 40, 228, 231, 137,
+      ])
+    );
+    sign({ private_key, hash }).then(({ r, s }) => {
       deepStrictEqual(
         r,
         Uint8Array.from([
@@ -59,11 +63,15 @@ export default (tests) => {
   });
 
   tests.add("ECDSA test 3 iterations.", async () => {
-    const data = Uint8Array.from([
-      69, 190, 43, 207, 207, 204, 186, 186, 41, 243, 229, 40, 86, 150, 183, 176,
-      50, 222, 50, 152, 13, 242, 56, 51, 159, 168, 98, 15, 76, 26, 229, 68,
-    ]);
-    sign({ private_key, data }).then(({ r, s }) => {
+    const hash = await sha256(
+      Uint8Array.from([
+        69, 190, 43, 207, 207, 204, 186, 186, 41, 243, 229, 40, 86, 150, 183,
+        176, 50, 222, 50, 152, 13, 242, 56, 51, 159, 168, 98, 15, 76, 26, 229,
+        68,
+      ])
+    );
+
+    sign({ private_key, hash }).then(({ r, s }) => {
       deepStrictEqual(
         r,
         Uint8Array.from([
@@ -91,16 +99,18 @@ export default (tests) => {
         171, 209, 35, 208, 126, 4, 237, 27, 221, 89, 230, 143, 1, 241, 209, 116,
         11, 185, 87, 240, 82, 81, 52, 97, 243, 122, 3, 93, 4, 243, 118, 38,
       ]),
-      data: Uint8Array.from([
-        42, 2, 160, 5, 62, 90, 140, 247, 58, 86, 186, 15, 218, 17, 228, 217, 46,
-        2, 56, 164, 162, 170, 116, 252, 207, 70, 213, 169, 16, 116, 104, 64,
-        179, 11, 93, 97, 0, 203, 18, 176, 219, 213, 0, 0, 0, 0, 1, 0, 166, 130,
-        52, 3, 234, 48, 85, 0, 0, 0, 87, 45, 60, 205, 205, 1, 80, 84, 85, 53,
-        93, 26, 161, 130, 0, 0, 0, 0, 168, 237, 50, 50, 33, 80, 84, 85, 53, 93,
-        26, 161, 130, 48, 77, 198, 14, 42, 56, 200, 32, 1, 0, 0, 0, 0, 0, 0, 0,
-        4, 69, 79, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      ]),
+      hash: await sha256(
+        Uint8Array.from([
+          42, 2, 160, 5, 62, 90, 140, 247, 58, 86, 186, 15, 218, 17, 228, 217,
+          46, 2, 56, 164, 162, 170, 116, 252, 207, 70, 213, 169, 16, 116, 104,
+          64, 179, 11, 93, 97, 0, 203, 18, 176, 219, 213, 0, 0, 0, 0, 1, 0, 166,
+          130, 52, 3, 234, 48, 85, 0, 0, 0, 87, 45, 60, 205, 205, 1, 80, 84, 85,
+          53, 93, 26, 161, 130, 0, 0, 0, 0, 168, 237, 50, 50, 33, 80, 84, 85,
+          53, 93, 26, 161, 130, 48, 77, 198, 14, 42, 56, 200, 32, 1, 0, 0, 0, 0,
+          0, 0, 0, 4, 69, 79, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        ])
+      ),
     });
 
     deepStrictEqual(
@@ -128,10 +138,12 @@ export default (tests) => {
         171, 209, 35, 208, 126, 4, 237, 27, 221, 89, 230, 143, 1, 241, 209, 116,
         11, 185, 87, 240, 82, 81, 52, 97, 243, 122, 3, 93, 4, 243, 118, 38,
       ]),
-      data: Uint8Array.from(
-        Buffer.from(
-          "8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8ffb6f9061f41a6466f09b000000000110e77d792a77b39e000050d0e4e952320110e77d792a77b39e00000000a8ed32322100000000a868a45a2c000000000000000103706f6f03706f6f0101320001013200000000000000000000000000000000000000000000000000000000000000000000",
-          "hex"
+      hash: await sha256(
+        Uint8Array.from(
+          Buffer.from(
+            "8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8ffb6f9061f41a6466f09b000000000110e77d792a77b39e000050d0e4e952320110e77d792a77b39e00000000a8ed32322100000000a868a45a2c000000000000000103706f6f03706f6f0101320001013200000000000000000000000000000000000000000000000000000000000000000000",
+            "hex"
+          )
         )
       ),
     });
@@ -155,10 +167,12 @@ export default (tests) => {
   });
 
   tests.add("Signature test", async () => {
-    const data = Uint8Array.from(
-      "8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8ffb6f9061f41a6466f09b000000000110e77d792a77b39e000050d0e4e952320110e77d792a77b39e00000000a8ed32322100000000a868a45a2c000000000000000103706f6f03706f6f0101320001013200000000000000000000000000000000000000000000000000000000000000000000"
-        .match(/[a-fA-F0-9]{2}/gmu)
-        .map((i) => `0x${i}`)
+    const hash = await sha256(
+      Uint8Array.from(
+        "8a34ec7df1b8cd06ff4a8abbaa7cc50300823350cadc59ab296cb00d104d2b8ffb6f9061f41a6466f09b000000000110e77d792a77b39e000050d0e4e952320110e77d792a77b39e00000000a8ed32322100000000a868a45a2c000000000000000103706f6f03706f6f0101320001013200000000000000000000000000000000000000000000000000000000000000000000"
+          .match(/[a-fA-F0-9]{2}/gmu)
+          .map((i) => `0x${i}`)
+      )
     );
 
     const private_key = Uint8Array.from([
@@ -176,7 +190,7 @@ export default (tests) => {
       167, 60, 97, 156, 142, 211, 135, 188, 248, 131, 7, 226, 5, 21, 35, 95,
     ]);
 
-    const sig = await sign({ data, private_key });
+    const sig = await sign({ hash, private_key });
     deepStrictEqual(sig.r, r);
     deepStrictEqual(sig.s, s);
     deepStrictEqual(sig.v, 1);
@@ -188,8 +202,9 @@ export default (tests) => {
       230, 139, 37, 88, 196, 26, 116, 175, 31, 45, 220, 166, 53, 203, 238, 240,
       125,
     ]);
-    const data = Uint8Array.from([23, 23, 123, 244]);
-    const sig = await sign({ data, private_key });
+
+    const hash = await sha256(Uint8Array.from([23, 23, 123, 244]));
+    const sig = await sign({ hash, private_key });
 
     deepStrictEqual(
       sig.r,

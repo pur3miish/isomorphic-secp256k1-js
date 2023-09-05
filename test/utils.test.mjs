@@ -1,5 +1,6 @@
 import { deepStrictEqual, rejects } from "assert";
 import crypto from "crypto";
+import sha256 from "universal-sha256-js/sha256.mjs";
 
 import {
   get_signature,
@@ -14,9 +15,9 @@ export default (tests) => {
   tests.add("Ultils tests.", async () => {
     powmod(2n, 2n, 2n);
     mul_inverse(2n, 1n);
-    rejects(() =>
+    rejects(async () =>
       recover_public_key({
-        data: new Uint8Array(10),
+        hash: await sha256(new Uint8Array(10)),
         signature: {
           r: Uint8Array.from([1]),
           s: Uint8Array.from([1]),
@@ -25,7 +26,7 @@ export default (tests) => {
       })
     );
     recover_public_key({
-      data: new Uint8Array(10),
+      hash: await sha256(new Uint8Array(10)),
       signature: {
         r: Uint8Array.from([1]),
         s: Uint8Array.from([1]),
@@ -73,13 +74,12 @@ export default (tests) => {
       200,
     ]);
 
-    const data = Uint8Array.from([1, 2, 3]);
-
-    const signature = await sign({ private_key: private_key_negative_y, data });
+    const hash = await sha256(Uint8Array.from([1, 2, 3]));
+    const signature = await sign({ private_key: private_key_negative_y, hash });
 
     deepStrictEqual(
       public_key_negative_y,
-      await recover_public_key({ data, signature })
+      await recover_public_key({ hash, signature })
     );
   });
 };

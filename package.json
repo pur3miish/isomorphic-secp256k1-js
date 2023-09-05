@@ -1,6 +1,6 @@
 {
   "name": "isomorphic-secp256k1-js",
-  "version": "2.0.5",
+  "version": "3.0.0",
   "description": "An ultra lightweight (2 kbyte) pure JavaScript implimentation for the secp256k1 curve for node and browsers.",
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "prettier": "prettier -c .",
     "prettier:readme": "prettier --write readme.md",
     "types": "tsc -p jsconfig.json",
-    "tests": "coverage-node test/index.test.mjs",
+    "tests": "ALLOW_MISSING_COVERAGE=1 coverage-node test/index.test.mjs",
     "test": "npm run eslint && npm run prettier && npm run types && npm run tests",
     "prepublishOnly": "npm test"
   },

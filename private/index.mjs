@@ -134,7 +134,7 @@ export const get_signature = async (
 
   // https://bitcoin.stackexchange.com/questions/83035/how-to-determine-first-byte-recovery-id-for-signatures-message-signing
   let v = 0n;
-  // if (Q.x > n) v = 2n
+  if (Q.x > n) v = 2n;
 
   r = number_to_array(Q.x);
   val = get_mod(mul_inverse(T, n) * (Q.x * d + e), n);

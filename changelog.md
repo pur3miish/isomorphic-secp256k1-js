@@ -1,5 +1,11 @@
 # Isomorphic-secp256k1-js
 
+# 3.0.0
+
+### Main
+
+- Argument on `sign` and `recover_public_key` is now a hash insterad of data, the digital signature previosuly hashed the data transaction, now it takes the hash as an argument to digest.
+
 ## 2.0.4
 
 ### Patch
