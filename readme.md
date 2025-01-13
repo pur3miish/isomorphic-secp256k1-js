@@ -2,45 +2,27 @@
 
 [![NPM Package](https://img.shields.io/npm/v/isomorphic-secp256k1-js.svg)](https://www.npmjs.org/package/isomorphic-secp256k1-js) [![CI status](https://github.com/pur3miish/isomorphic-secp256k1-js/workflows/CI/badge.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/blob/main/LICENSE)
 
-An ultra lightweight (1.6kb minify + gzip) [Universal](https://en.wikipedia.org/wiki/Isomorphic_JavaScript) JavaScript [Elliptic Curve Digital Signature Algorithm](https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm) (ECDSA) for the Koblitz secp256k1 curve.
-
-Cross platform support for [Node.js](https://nodejs.org) and [Deno](https://deno.land).
+An ultra lightweight [Universal](https://en.wikipedia.org/wiki/Isomorphic_JavaScript) (Browser and Node) JavaScript [Elliptic Curve Digital Signature Algorithm](https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm) (ECDSA) for secp256k1 curve that is used for many blockchains.
 
 ## Exports
 
-The [npm](https://npmjs.com) package [`isomorphic-secp256k1-js`](https://npm.im/isomorphic-secp25k1-js) features [optimal JavaScript module design](https://jaydenseric.com/blog/optimal-javascript-module-design). It doesn’t have a main index module, so use deep imports from the ECMAScript modules that are exported via the [`package.json`](./package.json) field [`exports`](https://nodejs.org/api/packages.html#exports):
+The [npm](https://npmjs.com) package doesn’t have a main index module, so use deep imports from the ECMAScript modules that are exported via the [`package.json`](./package.json) field [`exports`](https://nodejs.org/api/packages.html#exports):
 
-- [`recover_public_key.mjs`](./recover_public_key.mjs)
-- [`sign.mjs`](./sign.mjs)
-- [`get_public_key.mjs`](./get_public_key.mjs)
+Three main functions for recovering public key from a secp256k1 signature, signing and recovering public key from private key.
 
-## Impact on your bundle
+- [`recover_public_key`](./src/recover_public_key.ts)
+- [`sign`](./src/sign.ts)
+- [`get_public_key`](./src/get_public_key.ts)
 
-Using the [esbuild](https://esbuild.github.io/) minify and gzip you can generate a digital signature with less than **1.6kb** impact to your bundle.
+And Some utility functions.
 
-```shell
-cat dist/sign.mjs | wc
-  1      86    2898
+- [`sha256`](./src/sha256.ts)
+- [`hmac_sha256`](./src/hmac_sha256.ts)
+- [`utils`](./src/utils.ts)
 
-cat dist/sign.mjs.zip | wc
-  10      59    1604
-```
+## Features
 
-```shell
-cat dist/get_public_key.mjs | wc
-  1      27    1389
-
-cat dist/get_public_key.mjs.zip | wc
-  3      29    1006
-```
-
-```shell
-cat dist/recover_public_key.mjs | wc
-  1      50    2055
-
-cat dist/recover_public_key.mjs.zip | wc
-  4      38    1360
-```
+We have no sideEffects so the package can be tree shaken.
 
 ## Installation
 
@@ -50,25 +32,7 @@ For [Node.js](https://nodejs.org), to install [`isomorphic-secp256k1-js`](https:
 npm i isomorphic-secp256k1-js
 ```
 
-For [Deno.js](https://deno.land/x/secp256k1js), at the root of your project add a `deno.json` file and include these import paths:
-
-```json
-{
-  "imports": {
-    "universal-sha256-js/": "https://deno.land/x/sha256js/",
-    "universal-hmac-sha256-js/": "https://deno.land/x/hmacsha256/",
-    "universal-hmac-sha256-js/hmac-sha256-node.mjs": "https://deno.land/x/hmacsha256/hmac-sha256-deno.mjs"
-  }
-}
-```
-
 Then import:
-
-```js
-import recover_public_key from "https://deno.land/x/secp256k1js/recover_public_key.mjs";
-import sign from "https://deno.land/x/secp256k1js/sign.mjs";
-import get_public_key from "https://deno.land/x/secp256k1js/get_public_key.mjs";
-```
 
 ## Examples
 
@@ -96,36 +60,28 @@ const data = Uint8Array.from([
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
   22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
 ]);
-sign({ data, private_key }).then(console.log);
+
+sign({ hash: data, private_key }).then(console.log);
 ```
 
 > The logged output is { r: [23, …, 89], s: [111, …, 142], v: 1 }
 
-> **Note**
->
-> As this package is [ESM](https://nodejs.org/docs/latest-v16.x/api/esm.html) if you need to require it in a [Common JS](https://nodejs.org/docs/latest-v16.x/api/modules.html) package, then you can require like this:
-
 ```js
-(async function () {
-  const { default: recover_public_key } = await import(
-    "isomorphic-secp256k1-js/recover_public_key.mjs"
-  );
-  const { number_to_array } = await import("./private/utils.mjs");
+const { number_to_array } = await import("isomorphic-secp256k1-js/utils");
 
-  const key_pair = await recover_public_key({
-    data,
-    signature: {
-      r: number_to_array(
-        50172533143525448505731076092836454339589141171079665638497512992118311974590n
-      ),
-      s: number_to_array(
-        3372897403575535231543296615264124933490702058654620386530787287980439847001n
-      ),
-      v: 0,
-    },
-  });
-  console.log(key_pair);
-})();
+const key_pair = await recover_public_key({
+  data,
+  signature: {
+    r: number_to_array(
+      50172533143525448505731076092836454339589141171079665638497512992118311974590n
+    ),
+    s: number_to_array(
+      3372897403575535231543296615264124933490702058654620386530787287980439847001n
+    ),
+    v: 0,
+  },
+});
+console.log(key_pair);
 ```
 
 > Logged output was Uint8Array(33) [2,192,222,210,188,31,19,5,…
@@ -136,4 +92,3 @@ Supported runtime environments:
 
 - [Node.js](https://nodejs.org) versions `>=16.0.0`.
 - Browsers matching the [Browserslist](https://browsersl.ist) query [`> 0.5%, not OperaMini all, not dead`](https://browsersl.ist/?q=%3E+0.5%25%2C+not+OperaMini+all%2C+not+dead).
-- [Deno](https://deno.land) versions `^1.0.0`.

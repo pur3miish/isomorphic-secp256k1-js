@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // Use ESNext for the latest features
+    "module": "ESNext", // Output as ES modules
+    "moduleResolution": "node", // Node.js module resolution
+    "outDir": "./dist", // Output compiled files to dist folder
+    "esModuleInterop": true, // Enable interop between CommonJS and ES Modules
+    "allowSyntheticDefaultImports": true, // Allow default imports from CommonJS modules
+    "strict": true, // Enable strict mode for better type safety
+    "skipLibCheck": true, // Skip checking of declaration files
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "declarationDir": "./dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"] // Exclude node_modules folder
+}

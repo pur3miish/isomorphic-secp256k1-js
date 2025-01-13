@@ -1,6 +1,6 @@
 {
   "name": "isomorphic-secp256k1-js",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "An ultra lightweight (2 kbyte) pure JavaScript implimentation for the secp256k1 curve for node and browsers.",
   "repository": {
     "type": "git",
@@ -27,48 +27,53 @@
   "bugs": {
     "url": "https://github.com/pur3miish/isomorphic-secp256k1-js/issues"
   },
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "exports": {
+    "./get_public_key": "./dist/get_public_key.js",
+    "./hmac_sha256": "./dist/hmac_sha256.js",
+    "./recover_public_key": "./dist/recover_public_key.js",
+    "./sha256": "./dist/sha256.js",
+    "./sign": "./dist/sign.js",
+    "./utils": "./dist/utils.js",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
   "scripts": {
     "eslint": "eslint .",
     "prettier": "prettier -c .",
     "prettier:readme": "prettier --write readme.md",
-    "types": "tsc -p jsconfig.json",
-    "tests": "ALLOW_MISSING_COVERAGE=1 coverage-node test/index.test.mjs",
-    "test": "npm run eslint && npm run prettier && npm run types && npm run tests",
-    "prepublishOnly": "npm test"
+    "test": "npm run eslint && npm run prettier && npm run mocha",
+    "mocha": "mocha",
+    "prepublishOnly": "npm test",
+    "build": "tsc",
+    "extract-api": "api-extractor run --local"
   },
   "homepage": "https://github.com/pur3miish/isomorphic-secp256k1-js#readme",
   "engines": {
-    "node": "^16.0.0 || >= 18.0.0"
+    "node": ">= 18.0.0"
   },
   "browserslist": [
     "defaults",
     "not IE 11"
   ],
-  "files": [
-    "get_public_key.mjs",
-    "recover_public_key.mjs",
-    "sign.mjs",
-    "private/*.mjs"
-  ],
-  "exports": {
-    "./package.json": "./package.json",
-    "./sign.mjs": "./sign.mjs",
-    "./recover_public_key.mjs": "./recover_public_key.mjs",
-    "./get_public_key.mjs": "./get_public_key.mjs"
-  },
-  "sideEffects": false,
-  "dependencies": {
-    "universal-hmac-sha256-js": "^3.0.2",
-    "universal-sha256-js": "^2.0.0"
-  },
   "devDependencies": {
-    "@types/node": "^18.13.0",
-    "coverage-node": "^8.0.0",
-    "esbuild": "^0.17.11",
+    "@types/chai": "^5.0.1",
+    "@types/elliptic": "^6.4.18",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "chai": "^5.1.2",
     "eslint": "^8.34.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
+    "mocha": "^11.0.1",
     "prettier": "^2.8.4",
-    "test-director": "^10.0.0",
-    "typescript": "^4.9.5"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
   }
 }

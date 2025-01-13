@@ -1,5 +1,21 @@
 # Isomorphic-secp256k1-js
 
+# 4.0.0
+
+### Main
+
+- Changes to exports.
+
+### Major
+
+- TS functions added for better support.
+- Now a zero dependency package.
+- Now exporting a variety of utility functions.
+
+### Patch
+
+- Changes to read me
+
 # 3.0.0
 
 ### Main
