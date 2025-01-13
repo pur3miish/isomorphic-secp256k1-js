@@ -3,8 +3,8 @@ import type { Signature } from "./utils.js";
  * Recovery argument interface that contains the signature and the data.
  */
 export interface RecoverArg {
-    signature: Signature;
-    hash: Uint8Array;
+  signature: Signature;
+  hash: Uint8Array;
 }
 /**
  * Recovers a public key from a digital signature on the secp256k1 Koblitz curve.
@@ -25,5 +25,8 @@ export interface RecoverArg {
  * recover_public_key({ hash, signature }).then(console.log);
  * ```
  */
-declare function recover_public_key({ hash, signature, }: RecoverArg): Promise<Uint8Array>;
+declare function recover_public_key({
+  hash,
+  signature,
+}: RecoverArg): Promise<Uint8Array>;
 export default recover_public_key;

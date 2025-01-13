@@ -14,5 +14,8 @@
  * ```
  * > The logged output is Uint8Array([43, …])
  */
-declare function hmac_sha256(data: Uint8Array, key: Uint8Array): Promise<Uint8Array>;
+declare function hmac_sha256(
+  data: Uint8Array,
+  key: Uint8Array
+): Promise<Uint8Array>;
 export default hmac_sha256;

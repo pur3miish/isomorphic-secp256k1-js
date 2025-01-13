@@ -10,15 +10,15 @@ The [npm](https://npmjs.com) package doesn’t have a main index module, so use 
 
 Three main functions for recovering public key from a secp256k1 signature, signing and recovering public key from private key.
 
-- [`recover_public_key`](./src/recover_public_key.ts)
-- [`sign`](./src/sign.ts)
-- [`get_public_key`](./src/get_public_key.ts)
+- [`recover_public_key.js`](./src/recover_public_key.ts)
+- [`sign.js`](./src/sign.ts)
+- [`get_public_key.js`](./src/get_public_key.ts)
 
 And Some utility functions.
 
-- [`sha256`](./src/sha256.ts)
-- [`hmac_sha256`](./src/hmac_sha256.ts)
-- [`utils`](./src/utils.ts)
+- [`sha256.js`](./src/sha256.ts)
+- [`hmac_sha256.js`](./src/hmac_sha256.ts)
+- [`utils.js`](./src/utils.ts)
 
 ## Features
 

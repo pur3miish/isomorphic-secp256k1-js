@@ -1,6 +1,6 @@
 {
   "name": "isomorphic-secp256k1-js",
-  "version": "4.0.0",
+  "version": "4.0.3",
   "description": "An ultra lightweight (2 kbyte) pure JavaScript implimentation for the secp256k1 curve for node and browsers.",
   "repository": {
     "type": "git",
@@ -28,17 +28,33 @@
     "url": "https://github.com/pur3miish/isomorphic-secp256k1-js/issues"
   },
   "type": "module",
-  "types": "dist/index.d.ts",
   "files": [
-    "dist/"
+    "./get_public_key.js",
+    "./get_public_key.d.ts",
+    "./hmac_sha256.js",
+    "./hmac_sha256.d.ts",
+    "./recover_public_key.js",
+    "./recover_public_key.d.ts",
+    "./sha256.js",
+    "./sha256.d.ts",
+    "./sign.js",
+    "./sign.d.ts",
+    "./utils.js",
+    "./utils.d.ts"
   ],
   "exports": {
-    "./get_public_key": "./dist/get_public_key.js",
-    "./hmac_sha256": "./dist/hmac_sha256.js",
-    "./recover_public_key": "./dist/recover_public_key.js",
-    "./sha256": "./dist/sha256.js",
-    "./sign": "./dist/sign.js",
-    "./utils": "./dist/utils.js",
+    "./get_public_key.js": "./get_public_key.js",
+    "./get_public_key": "./get_public_key.js",
+    "./hmac_sha256.js": "./hmac_sha256.js",
+    "./hmac_sha256": "./hmac_sha256.js",
+    "./recover_public_key.js": "./recover_public_key.js",
+    "./recover_public_key": "./recover_public_key.js",
+    "./sign.js": "./sign.js",
+    "./sign": "./sign.js",
+    "./utils.js": "./utils.js",
+    "./utils": "./utils.js",
+    "./sha256": "./sha256.js",
+    "./sha256.js": "./sha256.js",
     "./package.json": "./package.json"
   },
   "sideEffects": false,
