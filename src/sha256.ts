@@ -22,8 +22,17 @@ export default async function sha256(data: Uint8Array): Promise<Uint8Array> {
 
   if (typeof window === "undefined") {
     // Node.js environment
-    const { createHash } = await import("crypto");
-    return new Uint8Array(createHash("sha256").update(data).digest());
+
+    let crypto;
+    try {
+      // eslint-disable-next-line
+      crypto = require("crypto"); // Works in `pkg`
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_err) {
+      crypto = await import("crypto"); // Works in ESM
+    }
+
+    return new Uint8Array(crypto.createHash("sha256").update(data).digest());
   } else {
     // Browser environment
     const digest = await crypto.subtle.digest("SHA-256", data);

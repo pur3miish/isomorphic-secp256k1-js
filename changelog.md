@@ -1,5 +1,22 @@
 # Isomorphic-secp256k1-js
 
+## 4.0.5
+
+### Patch
+
+- Typeo fixes
+- Removal of createRequire as it was causing pkg compilation errors.
+
+```js
+const require = createRequire(import.meta.url);
+```
+
+## 4.0.4
+
+### Patch
+
+- Bug fixes for import/require [hmac_sha256](hmac_sha256.js) and [sha256](sha256.js)
+
 # 4.0.0
 
 ### Main

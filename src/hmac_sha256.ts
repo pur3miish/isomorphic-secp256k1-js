@@ -25,9 +25,17 @@ async function hmac_sha256(
 
   if (typeof window === "undefined") {
     // For Node.js environment
-    const { createHmac } = await import("crypto");
+    let crypto;
+    try {
+      // eslint-disable-next-line
+      crypto = require("crypto"); // Works in `pkg`
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_err) {
+      crypto = await import("crypto"); // Works in ESM
+    }
+
     return Uint8Array.from([
-      ...createHmac("SHA256", key).update(data).digest(),
+      ...crypto.createHmac("SHA256", key).update(data).digest(),
     ]);
   } else {
     // For browser environment

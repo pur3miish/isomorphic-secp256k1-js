@@ -1,6 +1,6 @@
 {
   "name": "isomorphic-secp256k1-js",
-  "version": "4.0.3",
+  "version": "4.0.5",
   "description": "An ultra lightweight (2 kbyte) pure JavaScript implimentation for the secp256k1 curve for node and browsers.",
   "repository": {
     "type": "git",
