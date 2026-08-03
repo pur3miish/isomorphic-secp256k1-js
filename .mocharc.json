@@ -1,6 +1,0 @@
-{
-  "require": ["tsx"],
-  "watch-extensions": ["ts"],
-  "recursive": true,
-  "spec": "test/*.ts"
-}

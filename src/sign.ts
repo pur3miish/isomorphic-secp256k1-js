@@ -1,88 +1,167 @@
-// @ts-check
-
 import hmac_sha256 from "./hmac_sha256.js";
-import sha256 from "./sha256.js";
 import type { Signature } from "./utils.js";
-import { get_signature } from "./utils.js";
-import { array_to_number } from "./utils.js";
+import {
+  array_to_number,
+  blinded_multiply,
+  concat_bytes,
+  get_mod,
+  hash_to_scalar,
+  mul_inverse,
+  number_to_array,
+  secp256k1,
+  validate_hash,
+  validate_private_key,
+  verify_signature_point,
+} from "./utils.js";
 
-export interface signArgs {
-  /**
-   * secp256k1 private key 32 bytes.
-   */
+export interface SignArgs {
   private_key: Uint8Array;
-  /**
-   * Message digest hash 32 bytes
-   */
+  /** A 32-byte message digest. The function does not hash this value again. */
   hash: Uint8Array;
-  /**
-   * Enforce low S values, see BIP62.
-   * If `canonical` is true, ensures the signature's 's' value is in the canonical range (0 <= s <= n/2).
-   */
+  /** Normalize S into the lower half of the curve order. Defaults to true. */
   canonical?: boolean;
+  /** Optional entropy mixed into RFC 6979 to harden against fault attacks. */
+  extra_entropy?: boolean | Uint8Array;
 }
 
-/**
- * Signs a message hash using the secp256k1 curve.
- * If `canonical` is true, ensures the signature's 's' value is in the canonical range (0 <= s <= n/2).
- *
- * @param {SignArgs} args - The sign function arguments containing the private key, message hash, and optional canonical flag.
- * @returns {Promise<Uint8Array>} The generated signature.
- *
- * @example
- * const private_key = new Uint8Array([210, 101, 63, 247, 203, 178, 216, 255]);
- * const hash = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
- *
- * sign({ private_key, hash, canonical: true }).then(console.log);
- */
+function get_extra_entropy(value: boolean | Uint8Array): Uint8Array {
+  if (value === false) return new Uint8Array(0);
+  if (value === true) {
+    if (!globalThis.crypto?.getRandomValues) {
+      throw new Error("Web Crypto API is required for hedged signing.");
+    }
+    return globalThis.crypto.getRandomValues(new Uint8Array(32));
+  }
+  if (!(value instanceof Uint8Array)) {
+    throw new TypeError("extra_entropy must be a boolean or Uint8Array.");
+  }
+  if (value.length > 1024) {
+    throw new RangeError("extra_entropy must not exceed 1024 bytes.");
+  }
+  return Uint8Array.from(value);
+}
+
+async function hmac_and_erase_data(
+  data: Uint8Array,
+  key: Uint8Array,
+): Promise<Uint8Array> {
+  try {
+    return await hmac_sha256(data, key);
+  } finally {
+    data.fill(0);
+  }
+}
+
+/** Signs a 32-byte digest using RFC 6979 and fixed-width compact components. */
 async function sign({
   private_key,
   hash,
   canonical = true,
-}: signArgs): Promise<Signature> {
-  /**
-   * Deterministically generate `k` via the [IETF-rfc6979](https://tools.ietf.org/html/rfc6979#section-3.2)
-   */
-  async function deterministically_generate_k(
-    hash: Uint8Array,
-    private_key: Uint8Array,
-    nonce = 0
-  ): Promise<Signature> {
-    const msg_digest = nonce
-      ? await sha256(Uint8Array.from([...hash, ...new Uint8Array(nonce)]))
-      : hash;
-
-    const v = new Uint8Array(32).fill(1);
-    const k = new Uint8Array(32).fill(0);
-
-    const buff_D = await hmac_sha256(
-      Uint8Array.from([...v, 0, ...private_key, ...msg_digest]),
-      k
-    );
-    const buf_E = await hmac_sha256(v, buff_D);
-    const buf_F = await hmac_sha256(
-      Uint8Array.from([...buf_E, 1, ...private_key, ...msg_digest]),
-      buff_D
-    );
-    const buf_G = await hmac_sha256(buf_E, buf_F);
-    const buf_h2b = await hmac_sha256(buf_G, buf_F);
-
-    const T = array_to_number(buf_h2b);
-    const e = array_to_number(hash);
-    const d = array_to_number(private_key);
-
-    const { r, s, racid } = await get_signature(T, e, d, {
-      buf_h2b,
-      buf_F,
-      canonical,
-    });
-
-    if (r[0] >= 0x80n || s[0] >= 0x80n)
-      return deterministically_generate_k(hash, private_key, ++nonce);
-    else return { r, s, v: Number(racid) };
+  extra_entropy = false,
+}: SignArgs): Promise<Signature> {
+  if (!(private_key instanceof Uint8Array)) {
+    throw new TypeError("private_key must be a Uint8Array.");
+  }
+  if (!(hash instanceof Uint8Array)) {
+    throw new TypeError("hash must be a Uint8Array.");
+  }
+  if (typeof canonical !== "boolean") {
+    throw new TypeError("canonical must be a boolean.");
   }
 
-  return deterministically_generate_k(hash, private_key);
+  // Caller-owned arrays can be mutated while Web Crypto operations are
+  // pending. Snapshot them before the first await so RFC 6979 nonce derivation
+  // and the ECDSA equation always use the same key and digest.
+  const private_key_bytes = Uint8Array.from(private_key);
+  const hash_bytes = Uint8Array.from(hash);
+  let additional_data: Uint8Array = new Uint8Array(0);
+  let digest_octets: Uint8Array = new Uint8Array(0);
+  let seed: Uint8Array = new Uint8Array(0);
+  let key: Uint8Array = new Uint8Array(32);
+  let value: Uint8Array = new Uint8Array(32).fill(1);
+
+  try {
+    validate_private_key(private_key_bytes);
+    validate_hash(hash_bytes);
+    additional_data = get_extra_entropy(extra_entropy);
+    digest_octets = number_to_array(hash_to_scalar(hash_bytes));
+    seed = concat_bytes(private_key_bytes, digest_octets, additional_data);
+
+    let next_key = await hmac_and_erase_data(
+      concat_bytes(value, Uint8Array.of(0), seed),
+      key,
+    );
+    key.fill(0);
+    key = next_key;
+    value = await hmac_and_erase_data(value, key);
+    next_key = await hmac_and_erase_data(
+      concat_bytes(value, Uint8Array.of(1), seed),
+      key,
+    );
+    key.fill(0);
+    key = next_key;
+    value = await hmac_and_erase_data(value, key);
+
+    const private_scalar = array_to_number(private_key_bytes);
+    const message_scalar = hash_to_scalar(hash_bytes);
+    const generator = { x: secp256k1.x, y: secp256k1.y };
+    const public_point = blinded_multiply(generator, private_scalar);
+    for (;;) {
+      value = await hmac_and_erase_data(value, key);
+      const nonce = array_to_number(value);
+      if (nonce > 0n && nonce < secp256k1.n) {
+        const nonce_point = blinded_multiply(generator, nonce);
+        const r = get_mod(nonce_point.x, secp256k1.n);
+        if (r !== 0n) {
+          let s = get_mod(
+            mul_inverse(nonce, secp256k1.n) *
+              (message_scalar + r * private_scalar),
+            secp256k1.n,
+          );
+          if (s !== 0n) {
+            let recovery =
+              (nonce_point.x === r ? 0 : 2) | Number(nonce_point.y & 1n);
+            if (canonical && s > secp256k1.n / 2n) {
+              s = secp256k1.n - s;
+              recovery ^= 1;
+            }
+            const signature = {
+              r: number_to_array(r),
+              s: number_to_array(s),
+              v: recovery,
+            };
+            if (
+              !verify_signature_point(
+                hash_bytes,
+                signature,
+                public_point,
+                canonical,
+              )
+            ) {
+              throw new Error("Generated signature failed self-verification.");
+            }
+            return signature;
+          }
+        }
+      }
+
+      next_key = await hmac_and_erase_data(
+        concat_bytes(value, Uint8Array.of(0)),
+        key,
+      );
+      key.fill(0);
+      key = next_key;
+      value = await hmac_and_erase_data(value, key);
+    }
+  } finally {
+    private_key_bytes.fill(0);
+    hash_bytes.fill(0);
+    additional_data.fill(0);
+    digest_octets.fill(0);
+    seed.fill(0);
+    key.fill(0);
+    value.fill(0);
+  }
 }
 
 export default sign;

@@ -1,32 +1,19 @@
-import { double_and_add, secp256k1 } from "./utils.js";
-import { array_to_number, number_to_array } from "./utils.js";
+import {
+  array_to_number,
+  blinded_multiply,
+  encode_public_key,
+  secp256k1,
+  validate_private_key,
+} from "./utils.js";
 
-/**
- * Generates a compressed public key for the `secp256k1` curve.
- * @public
- * @param {Uint8Array} private_key - A valid secp256k1 private key.
- * @returns {Uint8Array} - The compressed public key.
- *
- * @example
- * ```ts
- * const private_key = new Uint8Array([
- *   210, 101, 63, 247, 203, 178, 216, 255, 18, 154, 194, 126, 245, 120, 28, 230,
- *   139, 37, 88, 196, 26, 116, 175, 31, 45, 220, 166, 53, 203, 238, 240, 125
- * ]);
- *
- * get_public_key(private_key).then(console.log); // compressed public key.
- * ```
- * > The logged output will be a compressed public key like [2, …, 207].
- */
+/** Derives a canonical 33-byte compressed public key from a private key. */
 async function get_public_key(private_key: Uint8Array): Promise<Uint8Array> {
-  const { x, y, n, mod } = secp256k1;
-
-  const k = array_to_number(private_key);
-  if (n < k) {
-    throw new RangeError("Invalid private key size");
-  }
-  const R = double_and_add({ x, y }, k, mod, n);
-  return Uint8Array.from([R.y % 2n ? 3 : 2, ...number_to_array(R.x)]);
+  validate_private_key(private_key);
+  const point = blinded_multiply(
+    { x: secp256k1.x, y: secp256k1.y },
+    array_to_number(private_key),
+  );
+  return encode_public_key(point);
 }
 
 export default get_public_key;

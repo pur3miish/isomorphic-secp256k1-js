@@ -1,20 +1,44 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
 jobs:
   test:
-    name: Test with Node.js v${{ matrix.node }} and ${{ matrix.os }}
+    name: Node.js ${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        node: ["20"]
+        include:
+          - os: ubuntu-latest
+            node: "20.19.0"
+          - os: ubuntu-latest
+            node: "22"
+          - os: ubuntu-latest
+            node: "24"
+          - os: macos-latest
+            node: "24"
+          - os: windows-latest
+            node: "24"
     steps:
-      - uses: actions/checkout@v1
-      - name: Setup Node.js v${{ matrix.node }}
-        uses: actions/setup-node@v1
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node }}
-      - name: npm install and test
-        run: npm install-test
-        env:
-          CI: true
+          cache: npm
+          package-manager-cache: true
+      - run: npm ci
+      - run: npm test
+      - name: Inspect package contents
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '24'
+        run: npm pack --dry-run

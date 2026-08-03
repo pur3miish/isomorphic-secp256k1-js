@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ESNext", // Use ESNext for the latest features
-    "module": "ESNext", // Output as ES modules
-    "moduleResolution": "node", // Node.js module resolution
-    "outDir": ".", // Output compiled files to dist folder
-    "esModuleInterop": true, // Enable interop between CommonJS and ES Modules
-    "allowSyntheticDefaultImports": true, // Allow default imports from CommonJS modules
-    "strict": true, // Enable strict mode for better type safety
-    "skipLibCheck": true, // Skip checking of declaration files
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "rootDir": "src",
+    "outDir": ".",
+    "strict": true,
+    "skipLibCheck": false,
     "declaration": true,
+    "declarationDir": ".",
+    "noEmitOnError": true,
     "forceConsistentCasingInFileNames": true,
-    "declarationDir": "."
+    "verbatimModuleSyntax": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"] // Exclude node_modules folder
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "test"]
 }

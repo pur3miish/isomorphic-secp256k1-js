@@ -1,77 +1,80 @@
-import { deepStrictEqual, rejects } from "assert";
-import crypto from "crypto";
+import assert from "node:assert/strict";
+import test from "node:test";
 
-import recover_public_key from "../src/recover_public_key.js";
+import hmac_sha256 from "../src/hmac_sha256.js";
 import sha256 from "../src/sha256.js";
-import sign from "../src/sign.js";
-import { get_signature, mul_inverse, powmod, secp256k1 } from "../src/utils.js";
+import {
+  add,
+  array_to_number,
+  double_and_add,
+  mul_inverse,
+  negate,
+  number_to_array,
+  point_from_x,
+  recovered_to_signature,
+  scalar_multiply,
+  secp256k1,
+  signature_to_compact,
+  signature_to_recovered,
+} from "../src/utils.js";
 
-it("Ultils tests.", async () => {
-  powmod(2n, 2n, 2n);
-  mul_inverse(2n, 1n);
-  rejects(async () =>
-    recover_public_key({
-      hash: await sha256(new Uint8Array(10)),
-      signature: {
-        r: Uint8Array.from([1]),
-        s: Uint8Array.from([1]),
-        v: 10n,
-      },
-    })
+test("uses fixed-width integer encodings", () => {
+  assert.equal(number_to_array(1n).length, 32);
+  assert.equal(array_to_number(number_to_array(1n)), 1n);
+  assert.equal(
+    Buffer.from(number_to_array(0x1234n, 2)).toString("hex"),
+    "1234",
   );
-  recover_public_key({
-    hash: await sha256(new Uint8Array(10)),
-    signature: {
-      r: Uint8Array.from([1]),
-      s: Uint8Array.from([1]),
-      v: -90n,
-    },
-  });
+  assert.throws(() => number_to_array(-1n));
+  assert.throws(() => number_to_array(256n, 1));
+  assert.throws(() => array_to_number(new Uint8Array(0)));
+  assert.throws(() => array_to_number(new Uint8Array(33)));
+});
 
-  get_signature(secp256k1.n * 2n, 0n, 0n, {
-    buf_h2b: Uint8Array.from(crypto.randomBytes(32)),
-    buf_F: Uint8Array.from(crypto.randomBytes(32)),
-  });
+test("round-trips compact and recovered signatures", () => {
+  const signature = {
+    r: number_to_array(1n),
+    s: number_to_array(2n),
+    v: 1,
+  };
+  assert.equal(signature_to_compact(signature).length, 64);
+  const recovered = signature_to_recovered(signature);
+  assert.equal(recovered.length, 65);
+  assert.equal(recovered[0], 1);
+  assert.deepEqual(recovered_to_signature(recovered), signature);
+});
 
-  get_signature(
-    secp256k1.n / 2n,
-    0n,
-    0n,
-    {
-      buf_h2b: Uint8Array.from(crypto.randomBytes(32)),
-      buf_F: Uint8Array.from(crypto.randomBytes(32)),
-    },
-    1,
-    { ...secp256k1, x: 0n, y: 0n }
+test("handles point-at-infinity and invalid-field edge cases", () => {
+  const generator = { x: secp256k1.x, y: secp256k1.y };
+  assert.equal(scalar_multiply(generator, 0n), null);
+  assert.equal(double_and_add(generator, secp256k1.n), null);
+  assert.equal(scalar_multiply(generator, secp256k1.n), null);
+  assert.equal(add(generator, negate(generator)), null);
+  assert.throws(() => mul_inverse(0n, secp256k1.n));
+  assert.throws(() => point_from_x(0, 0n));
+  assert.throws(() => point_from_x(2, secp256k1.x));
+});
+
+test("matches SHA-256 and HMAC-SHA256 known-answer vectors", async () => {
+  const message = new TextEncoder().encode("abc");
+  assert.equal(
+    Buffer.from(await sha256(message)).toString("hex"),
+    "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
   );
-
-  get_signature(
-    secp256k1.n * 2n,
-    secp256k1.n * 2n,
-    secp256k1.n * 2n,
-    {
-      buf_h2b: Uint8Array.from(crypto.randomBytes(32)),
-      buf_F: Uint8Array.from(crypto.randomBytes(32)),
-    },
-    1
+  assert.equal(
+    Buffer.from(
+      await hmac_sha256(
+        new TextEncoder().encode("The quick brown fox jumps over the lazy dog"),
+        new TextEncoder().encode("key"),
+      ),
+    ).toString("hex"),
+    "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8",
   );
 });
 
-it("private_key_negative_y", async () => {
-  const private_key_negative_y = new Uint8Array([
-    253, 156, 168, 92, 14, 7, 242, 47, 88, 234, 12, 42, 46, 235, 100, 3, 182,
-    58, 108, 250, 164, 92, 66, 252, 93, 171, 39, 59, 188, 182, 83, 97,
-  ]);
-  const public_key_negative_y = new Uint8Array([
-    3, 168, 142, 49, 253, 219, 92, 148, 48, 96, 69, 112, 118, 158, 50, 60, 229,
-    222, 18, 223, 1, 16, 96, 251, 225, 221, 1, 245, 224, 136, 33, 80, 200,
-  ]);
-
-  const hash = await sha256(Uint8Array.from([1, 2, 3]));
-  const signature = await sign({ private_key: private_key_negative_y, hash });
-
-  deepStrictEqual(
-    public_key_negative_y,
-    await recover_public_key({ hash, signature })
+test("hash helpers reject non-byte inputs", async () => {
+  await assert.rejects(() => sha256("abc" as unknown as Uint8Array));
+  await assert.rejects(() =>
+    hmac_sha256("abc" as unknown as Uint8Array, new Uint8Array([1, 2, 3])),
   );
 });

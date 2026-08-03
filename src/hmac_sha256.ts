@@ -16,43 +16,36 @@
  */
 async function hmac_sha256(
   data: Uint8Array,
-  key: Uint8Array
+  key: Uint8Array,
 ): Promise<Uint8Array> {
   // Ensure both 'data' and 'key' are Uint8Array instances
   if (!(data instanceof Uint8Array) || !(key instanceof Uint8Array)) {
     throw new TypeError("Expected Uint8Array input data.");
   }
 
-  if (typeof window === "undefined") {
-    // For Node.js environment
-    let crypto;
-    try {
-      // eslint-disable-next-line
-      crypto = require("crypto"); // Works in `pkg`
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_err) {
-      crypto = await import("crypto"); // Works in ESM
-    }
+  if (!globalThis.crypto?.subtle) {
+    throw new Error("Web Crypto API is required for HMAC-SHA256.");
+  }
 
-    return Uint8Array.from([
-      ...crypto.createHmac("SHA256", key).update(data).digest(),
-    ]);
-  } else {
-    // For browser environment
-    const importedKey = await window.crypto.subtle.importKey(
+  const key_bytes = Uint8Array.from(key);
+  const data_bytes = Uint8Array.from(data);
+  try {
+    const importedKey = await globalThis.crypto.subtle.importKey(
       "raw",
-      key,
-      { name: "HMAC", hash: { name: "SHA-256" } },
+      key_bytes,
+      { name: "HMAC", hash: "SHA-256" },
       false,
-      ["sign", "verify"]
+      ["sign"],
     );
-
-    const signature = await window.crypto.subtle.sign(
+    const signature = await globalThis.crypto.subtle.sign(
       "HMAC",
       importedKey,
-      data
+      data_bytes,
     );
     return new Uint8Array(signature);
+  } finally {
+    key_bytes.fill(0);
+    data_bytes.fill(0);
   }
 }
 

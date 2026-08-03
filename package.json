@@ -1,7 +1,7 @@
 {
   "name": "isomorphic-secp256k1-js",
-  "version": "4.0.5",
-  "description": "An ultra lightweight (2 kbyte) pure JavaScript implimentation for the secp256k1 curve for node and browsers.",
+  "version": "5.0.1",
+  "description": "A strict, zero-runtime-dependency secp256k1 ECDSA library for private-key generation, public-key derivation, deterministic signing, verification, and recovery in Node.js and browsers.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pur3miish/isomorphic-secp256k1-js.git"
@@ -13,13 +13,20 @@
     "blockchain",
     "digital",
     "signature",
+    "verification",
+    "public-key-recovery",
+    "key-generation",
+    "csprng",
+    "rfc6979",
     "ecc",
     "elliptic",
     "curve",
     "crypto",
     "currency",
     "secp256k1",
-    "dependencies",
+    "browser",
+    "node",
+    "zero-dependency",
     "lightweight"
   ],
   "author": "pur3miish",
@@ -28,68 +35,143 @@
     "url": "https://github.com/pur3miish/isomorphic-secp256k1-js/issues"
   },
   "type": "module",
+  "main": "./index.js",
+  "module": "./index.js",
+  "types": "./index.d.ts",
   "files": [
+    "./index.js",
+    "./index.d.ts",
+    "./generate_private_key.js",
+    "./generate_private_key.d.ts",
     "./get_public_key.js",
     "./get_public_key.d.ts",
     "./hmac_sha256.js",
     "./hmac_sha256.d.ts",
     "./recover_public_key.js",
     "./recover_public_key.d.ts",
+    "./verify.js",
+    "./verify.d.ts",
     "./sha256.js",
     "./sha256.d.ts",
     "./sign.js",
     "./sign.d.ts",
     "./utils.js",
-    "./utils.d.ts"
+    "./utils.d.ts",
+    "./SECURITY.md"
   ],
   "exports": {
-    "./get_public_key.js": "./get_public_key.js",
-    "./get_public_key": "./get_public_key.js",
-    "./hmac_sha256.js": "./hmac_sha256.js",
-    "./hmac_sha256": "./hmac_sha256.js",
-    "./recover_public_key.js": "./recover_public_key.js",
-    "./recover_public_key": "./recover_public_key.js",
-    "./sign.js": "./sign.js",
-    "./sign": "./sign.js",
-    "./utils.js": "./utils.js",
-    "./utils": "./utils.js",
-    "./sha256": "./sha256.js",
-    "./sha256.js": "./sha256.js",
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "default": "./index.js"
+    },
+    "./generate_private_key.js": {
+      "types": "./generate_private_key.d.ts",
+      "import": "./generate_private_key.js",
+      "default": "./generate_private_key.js"
+    },
+    "./generate_private_key": {
+      "types": "./generate_private_key.d.ts",
+      "import": "./generate_private_key.js",
+      "default": "./generate_private_key.js"
+    },
+    "./get_public_key.js": {
+      "types": "./get_public_key.d.ts",
+      "import": "./get_public_key.js",
+      "default": "./get_public_key.js"
+    },
+    "./get_public_key": {
+      "types": "./get_public_key.d.ts",
+      "import": "./get_public_key.js",
+      "default": "./get_public_key.js"
+    },
+    "./hmac_sha256.js": {
+      "types": "./hmac_sha256.d.ts",
+      "import": "./hmac_sha256.js",
+      "default": "./hmac_sha256.js"
+    },
+    "./hmac_sha256": {
+      "types": "./hmac_sha256.d.ts",
+      "import": "./hmac_sha256.js",
+      "default": "./hmac_sha256.js"
+    },
+    "./recover_public_key.js": {
+      "types": "./recover_public_key.d.ts",
+      "import": "./recover_public_key.js",
+      "default": "./recover_public_key.js"
+    },
+    "./recover_public_key": {
+      "types": "./recover_public_key.d.ts",
+      "import": "./recover_public_key.js",
+      "default": "./recover_public_key.js"
+    },
+    "./verify.js": {
+      "types": "./verify.d.ts",
+      "import": "./verify.js",
+      "default": "./verify.js"
+    },
+    "./verify": {
+      "types": "./verify.d.ts",
+      "import": "./verify.js",
+      "default": "./verify.js"
+    },
+    "./sign.js": {
+      "types": "./sign.d.ts",
+      "import": "./sign.js",
+      "default": "./sign.js"
+    },
+    "./sign": {
+      "types": "./sign.d.ts",
+      "import": "./sign.js",
+      "default": "./sign.js"
+    },
+    "./utils.js": {
+      "types": "./utils.d.ts",
+      "import": "./utils.js",
+      "default": "./utils.js"
+    },
+    "./utils": {
+      "types": "./utils.d.ts",
+      "import": "./utils.js",
+      "default": "./utils.js"
+    },
+    "./sha256": {
+      "types": "./sha256.d.ts",
+      "import": "./sha256.js",
+      "default": "./sha256.js"
+    },
+    "./sha256.js": {
+      "types": "./sha256.d.ts",
+      "import": "./sha256.js",
+      "default": "./sha256.js"
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
   "scripts": {
-    "eslint": "eslint .",
-    "prettier": "prettier -c .",
-    "prettier:readme": "prettier --write readme.md",
-    "test": "npm run eslint && npm run prettier && npm run mocha",
-    "mocha": "mocha",
-    "prepublishOnly": "npm test",
-    "build": "tsc",
-    "extract-api": "api-extractor run --local"
+    "clean": "node ./scripts/clean.mjs",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit -p tsconfig.test.json",
+    "test:unit": "node --import tsx --test test/*.test.ts",
+    "test": "npm run format:check && npm run build && npm run typecheck && npm run test:unit",
+    "prepack": "npm test",
+    "postpack": "npm run clean"
   },
   "homepage": "https://github.com/pur3miish/isomorphic-secp256k1-js#readme",
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.19.0"
   },
   "browserslist": [
     "defaults",
     "not IE 11"
   ],
   "devDependencies": {
-    "@types/chai": "^5.0.1",
-    "@types/elliptic": "^6.4.18",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^22.10.5",
-    "@typescript-eslint/eslint-plugin": "^8.19.1",
-    "@typescript-eslint/parser": "^8.19.1",
-    "chai": "^5.1.2",
-    "eslint": "^8.34.0",
-    "eslint-plugin-simple-import-sort": "^10.0.0",
-    "mocha": "^11.0.1",
-    "prettier": "^2.8.4",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "@types/node": "22.20.1",
+    "esbuild": "0.28.1",
+    "prettier": "3.9.6",
+    "tsx": "4.23.5",
+    "typescript": "5.9.3"
   }
 }

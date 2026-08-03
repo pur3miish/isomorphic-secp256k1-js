@@ -1,2 +1,4 @@
 package.json
-dist
+/*.js
+/*.d.ts
+/dist

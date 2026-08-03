@@ -20,22 +20,13 @@ export default async function sha256(data: Uint8Array): Promise<Uint8Array> {
     throw new TypeError("Expected Uint8Array input data.");
   }
 
-  if (typeof window === "undefined") {
-    // Node.js environment
-
-    let crypto;
-    try {
-      // eslint-disable-next-line
-      crypto = require("crypto"); // Works in `pkg`
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_err) {
-      crypto = await import("crypto"); // Works in ESM
-    }
-
-    return new Uint8Array(crypto.createHash("sha256").update(data).digest());
-  } else {
-    // Browser environment
-    const digest = await crypto.subtle.digest("SHA-256", data);
-    return new Uint8Array(digest);
+  if (!globalThis.crypto?.subtle) {
+    throw new Error("Web Crypto API is required for SHA-256.");
   }
+
+  const digest = await globalThis.crypto.subtle.digest(
+    "SHA-256",
+    Uint8Array.from(data),
+  );
+  return new Uint8Array(digest);
 }
