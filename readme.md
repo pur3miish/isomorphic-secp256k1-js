@@ -2,7 +2,7 @@
 
 [![NPM Package](https://img.shields.io/npm/v/isomorphic-secp256k1-js.svg)](https://www.npmjs.org/package/isomorphic-secp256k1-js) [![CI status](https://github.com/pur3miish/isomorphic-secp256k1-js/actions/workflows/node.js.yml/badge.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/actions/workflows/node.js.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/blob/main/LICENSE)
 
-[![Runtime dependencies: zero](https://img.shields.io/badge/runtime%20dependencies-zero-brightgreen.svg)](./package.json) [![Security audit: not independently audited](https://img.shields.io/badge/security%20audit-not%20independently%20audited-orange.svg)](./SECURITY.md) [![Timing: not constant-time](https://img.shields.io/badge/timing-not%20constant--time-orange.svg)](./SECURITY.md#threat-model-and-limitations)
+[![Runtime dependencies: zero](https://img.shields.io/badge/runtime%20dependencies-zero-brightgreen.svg)](./package.json) [![Timing: not constant-time](https://img.shields.io/badge/timing-not%20constant--time-orange.svg)](./SECURITY.md#threat-model-and-limitations)
 
 A small, strict, zero-runtime-dependency ECDSA implementation for the secp256k1 curve in Node.js and modern browsers. It provides:
 
