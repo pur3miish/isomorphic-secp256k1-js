@@ -1,7 +1,7 @@
 {
   "name": "isomorphic-secp256k1-js",
-  "version": "5.0.1",
-  "description": "A strict, zero-runtime-dependency secp256k1 ECDSA library for private-key generation, public-key derivation, deterministic signing, verification, and recovery in Node.js and browsers.",
+  "version": "5.0.2",
+  "description": "Zero-dependency secp256k1 ECDSA for Node.js and browsers, with native or caller-supplied CSPRNG key generation, RFC 6979 signing, verification, and recovery.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pur3miish/isomorphic-secp256k1-js.git"
@@ -16,8 +16,15 @@
     "verification",
     "public-key-recovery",
     "key-generation",
+    "private-key",
+    "public-key",
     "csprng",
+    "entropy",
+    "randomness",
+    "webcrypto",
+    "web-crypto",
     "rfc6979",
+    "recoverable-signature",
     "ecc",
     "elliptic",
     "curve",
@@ -26,6 +33,7 @@
     "secp256k1",
     "browser",
     "node",
+    "typescript",
     "zero-dependency",
     "lightweight"
   ],
@@ -57,7 +65,9 @@
     "./sign.d.ts",
     "./utils.js",
     "./utils.d.ts",
-    "./SECURITY.md"
+    "./SECURITY.md",
+    "./docs/randomness.md",
+    "./llms.txt"
   ],
   "exports": {
     ".": {

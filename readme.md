@@ -6,7 +6,7 @@
 
 A small, strict, zero-runtime-dependency ECDSA implementation for the secp256k1 curve in Node.js and modern browsers. It provides:
 
-- [`generate_private_key`](./src/generate_private_key.ts) — generates a uniformly distributed private scalar with rejection sampling, using caller-supplied entropy or the native [Web Crypto CSPRNG](https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues), following the key-generation requirements in [SEC 1](https://www.secg.org/sec1-v2.pdf).
+- [`generate_private_key`](./src/generate_private_key.ts) — generates a private scalar with rejection sampling, using the native [Web Crypto CSPRNG](https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues) by default or a caller-supplied cryptographic random source, following the key-generation requirements in [SEC 1](https://www.secg.org/sec1-v2.pdf).
 
 - [`validate_private_key`](./src/utils.ts) — enforces the canonical 32-byte encoding and the SEC 1 scalar interval `1 <= d < n`.
 
@@ -77,7 +77,15 @@ This is a best-effort timing mitigation, not a constant-time guarantee. The ladd
 
 ## Randomness and private keys
 
-Randomness is part of the security boundary for private-key generation. A predictable, repeated, or biased random source can reduce the possible private-key space enough for an attacker to search it. The resulting public key is still mathematically valid, but it is only as hard to attack as the private scalar was to predict. Range validation can reject invalid scalars; it cannot prove that a caller-supplied source contains enough entropy.
+Randomness is part of the security boundary for private-key generation. A predictable, repeated, biased, or truncated source can reduce the possible private-key space enough for an attacker to search it. The resulting public key can still be mathematically valid while its private key is predictable. Range validation rejects invalid scalars; it cannot prove that a source contains enough entropy.
+
+The package supports three explicit key-input paths:
+
+- **Native CSPRNG:** `generate_private_key()` uses `globalThis.crypto.getRandomValues`, the standard cryptographic random interface exposed by supported Node.js and browser runtimes.
+
+- **Caller-selected CSPRNG:** `generate_private_key({ random_source })` lets an application obtain bytes from an HSM, secure enclave, platform API, or another reviewed source. The callback can be synchronous or asynchronous.
+
+- **Existing private key:** applications can supply their own 32-byte key to `validate_private_key`, `get_public_key`, or `sign`. Each high-level secret operation validates the key before using it.
 
 `generate_private_key()` requests 32 bytes and uses rejection sampling:
 
@@ -85,7 +93,7 @@ Randomness is part of the security boundary for private-key generation. A predic
 2. Accept it only when `1 <= d < n`.
 3. Request another candidate when it is zero or at least the curve order.
 
-This preserves a uniform private-key distribution when the source bytes are uniform and avoids modulo bias. After 1024 invalid candidates, generation fails rather than looping forever on a broken source.
+This limits the encoded key to the secp256k1 private-scalar interval and preserves a uniform distribution when the source bytes are uniform. Candidates are not reduced modulo `n`, avoiding modulo bias. After 1024 invalid candidates, generation fails rather than looping forever on a broken source.
 
 With no options, Node.js and browsers use the same native Web Crypto interface:
 
@@ -95,7 +103,7 @@ import { generate_private_key } from "isomorphic-secp256k1-js";
 const private_key = await generate_private_key();
 ```
 
-Applications with an audited HSM, operating-system facility, deterministic test fixture used only in tests, or other source can provide a synchronous or asynchronous callback. The callback is requested to return exactly 32 bytes and may be called more than once:
+Applications with an HSM, operating-system facility, or another cryptographically secure source can provide a synchronous or asynchronous callback. The callback is requested to return exactly 32 bytes and may be called more than once:
 
 ```js
 const private_key = await generate_private_key({
@@ -103,7 +111,9 @@ const private_key = await generate_private_key({
 });
 ```
 
-The package validates and copies the callback result, but the application remains responsible for the source's unpredictability, independence, and entropy. Do not use `Math.random`, timestamps, UUIDs, passwords, or non-cryptographic seeded generators.
+The package validates and copies the callback result, but the application remains responsible for the source's unpredictability, independence, correct initialization, and entropy. Do not use `Math.random`, timestamps, UUIDs, passwords, counters, device identifiers, or general-purpose seeded generators. A deterministic source belongs only in tests and must never be reachable in a production key-generation path.
+
+Weak-source failures are not theoretical. The [Milk Sad vulnerability (CVE-2023-39910)](https://nvd.nist.gov/vuln/detail/CVE-2023-39910) made wallet keys recoverable because cryptographic key material came from an inadequately seeded general-purpose PRNG. Arkham has also [reported that the LuBian wallet software used only 32 bits of entropy](https://info.arkm.com/research/blockchain-analytics-all-the-use-cases-for-on-chain-data), making its key space practical to search. These examples do not mean a library can certify arbitrary entropy: they show why the default must be a platform CSPRNG and why custom sources remain an explicit trust decision.
 
 Applications may also supply an existing private key directly. `validate_private_key` throws unless it is exactly 32 bytes and represents a scalar in the valid SEC 1 interval; `get_public_key` and `sign` perform this validation internally as well.
 
@@ -117,6 +127,8 @@ const public_key = await get_public_key(private_key);
 Public-key derivation is deterministic: its internal random value is only 128-bit scalar blinding, which changes the calculation path without changing `Q = dG`. Signature generation uses RFC 6979, so the secret ECDSA nonce does not depend on runtime randomness by default. `sign({ extra_entropy: true })` can additionally hedge the deterministic nonce with 32 native random bytes.
 
 Never log a private key or place it in a URL or browser `localStorage`. For high-value or long-lived keys, prefer non-extractable hardware-backed storage.
+
+See [docs/randomness.md](./docs/randomness.md) for the exact guarantees, custom-source checklist, and integration patterns.
 
 ## Requirements
 
@@ -184,6 +196,12 @@ Tree shaking is a bundler optimization, not a change to the cryptographic API. I
 - Use a typed subpath import such as `isomorphic-secp256k1-js/sha256` when an application wants to address exactly one entry module.
 
 The package test suite bundles a root `sha256` import with esbuild and asserts that signing, HMAC, recovery, and curve-arithmetic code are absent from the generated bundle.
+
+### Package authors and automated tooling
+
+The package exposes stable named exports, TypeScript declarations, typed subpath exports, a side-effect-free ESM graph, and runnable examples in this README. These make the API easier for package consumers, code-search systems, documentation indexes, and coding assistants to identify and integrate correctly.
+
+[`llms.txt`](./llms.txt) provides a concise machine-readable API and security guide. It is supplementary documentation, not a guarantee that a particular search engine or language model will index or recommend the package. For the clearest downstream signal, use the canonical npm package name in examples and link to this repository rather than copying the implementation into another project.
 
 ### Node.js
 
@@ -386,7 +404,7 @@ Public keys use SEC 1 encoding:
 | Point arithmetic | `add`, `dbl`, `negate`, `scalar_multiply`, `double_and_add`, `blinded_multiply` | Elliptic-curve group operations; `null` represents the point at infinity |
 | Point encoding | `point_from_x`, `encode_public_key`, `decode_public_key`, `is_on_curve` | SEC 1 point reconstruction, serialization, parsing, and validation |
 | Input validation | `validate_private_key`, `validate_public_key`, `validate_hash`, `validate_signature` | Strict key, digest, point, and scalar boundary checks |
-| Signature encoding | `signature_to_compact`, `signature_to_recovered` | Fixed-width `r |  | s`and`v |  | r |  | s` encodings |
+| Signature encoding | `signature_to_compact`, `signature_to_recovered` | Fixed-width concatenations of `r` with `s`, optionally prefixed by `v` |
 | Verification primitive | `verify_signature_point` | Verifies a signature against an already-decoded curve point |
 
 Low-level scalar multiplication is synchronous, but the high-level secret operations are asynchronous because SHA-256 and HMAC use the Web Crypto API.

@@ -6,14 +6,24 @@ import {
   validate_private_key,
 } from "./utils.js";
 
-/** Returns exactly `length` bytes from a caller-selected CSPRNG. */
+/**
+ * Returns exactly `length` bytes from a caller-selected cryptographically
+ * secure random number generator (CSPRNG).
+ *
+ * The source may be synchronous or asynchronous and may be called more than
+ * once when rejection sampling encounters a value outside the private-scalar
+ * interval. The package validates the returned type and length, and copies the
+ * bytes, but cannot measure their entropy or unpredictability.
+ */
 export type RandomSource = (length: number) => Uint8Array | Promise<Uint8Array>;
 
 export interface GeneratePrivateKeyArgs {
   /**
-   * Optional caller-selected CSPRNG. It may be synchronous or asynchronous and
-   * must return exactly the requested number of bytes. Native Web Crypto is
-   * used when this option is omitted.
+   * Optional caller-selected CSPRNG, such as an HSM or platform security API.
+   * It must return exactly the requested number of bytes. Native Web Crypto
+   * (`globalThis.crypto.getRandomValues`) is used when this option is omitted.
+   * Never supply `Math.random`, timestamps, UUIDs, passwords, or a general-
+   * purpose seeded pseudorandom generator.
    */
   random_source?: RandomSource;
 }
@@ -31,7 +41,9 @@ function native_random_source(length: number): Uint8Array {
 
 /**
  * Generates a uniformly distributed secp256k1 private scalar by rejection
- * sampling. The result is always a new 32-byte array satisfying `1 <= d < n`.
+ * sampling, provided that the selected random source returns uniform,
+ * unpredictable bytes. The result is always a new 32-byte array satisfying
+ * `1 <= d < n`; candidates are never reduced modulo `n`.
  */
 async function generate_private_key({
   random_source = native_random_source,

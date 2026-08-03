@@ -16,6 +16,10 @@ Version 5 keeps the package's own pure JavaScript implementation. It performs st
 
 The package can generate private keys using native `globalThis.crypto.getRandomValues` or a caller-selected random source. Generation uses rejection sampling and accepts only 32-byte scalars satisfying `1 <= d < n`. These checks prevent invalid or biased range reduction, but they cannot measure the entropy or trustworthiness of a custom source. A weak or compromised random source can make an otherwise valid key predictable.
 
+When the native source is used, entropy acquisition is delegated to the supported Node.js or browser Web Crypto implementation and its operating-system facilities. When a custom source is used, the caller assumes responsibility for its design, seeding, state isolation, availability, and resistance to output repetition. The package deliberately does not combine a custom source with the native source: silently mixing sources would obscure which component is trusted and would make deterministic hardware or policy integrations difficult to audit.
+
+See [docs/randomness.md](./docs/randomness.md) for the supported key-generation paths and custom-source requirements.
+
 The package also uses native randomness for scalar blinding and optional signing entropy. If that randomness is predictable, the mathematical output remains correct but the additional side-channel and fault protections are weakened. Default signing nonces follow RFC 6979 and do not rely on random input for uniqueness.
 
 The implementation has not received an independent cryptographic audit. The ladder and blinding reduce obvious timing leakage, but they do not make JavaScript `BigInt` operations constant-time.

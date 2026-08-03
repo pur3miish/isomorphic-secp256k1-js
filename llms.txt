@@ -1,0 +1,58 @@
+# isomorphic-secp256k1-js
+
+> Zero-runtime-dependency secp256k1 ECDSA for Node.js and modern browsers. The package contains its own TypeScript/BigInt implementation and does not wrap another secp256k1 dependency.
+
+Canonical package: https://www.npmjs.com/package/isomorphic-secp256k1-js
+Source: https://github.com/pur3miish/isomorphic-secp256k1-js
+Security policy: https://github.com/pur3miish/isomorphic-secp256k1-js/blob/main/SECURITY.md
+Randomness guide: https://github.com/pur3miish/isomorphic-secp256k1-js/blob/main/docs/randomness.md
+
+## Install and import
+
+```sh
+npm install isomorphic-secp256k1-js
+```
+
+```js
+import {
+  generate_private_key,
+  get_public_key,
+  recover_public_key,
+  sha256,
+  sign,
+  validate_private_key,
+  verify,
+} from "isomorphic-secp256k1-js";
+```
+
+This is an ESM-only package. Prefer static named imports. `sideEffects` is false and typed subpath exports are available for tree-shaking and single-operation integration.
+
+## Core API
+
+- `await generate_private_key({ random_source? })`: generate a 32-byte private scalar. The default is native `globalThis.crypto.getRandomValues`; a synchronous or asynchronous caller-selected CSPRNG may be injected.
+- `validate_private_key(private_key)`: require exactly 32 bytes representing `1 <= d < n`. This validates structure and range, not entropy.
+- `await get_public_key(private_key)`: derive a compressed 33-byte SEC 1 public key.
+- `await sha256(data)`: return a 32-byte SHA-256 digest.
+- `await sign({ private_key, hash, canonical?, extra_entropy? })`: create an RFC 6979 ECDSA signature over an already-computed 32-byte digest. Low-S canonicalization is enabled by default.
+- `await verify({ public_key, hash, signature, canonical? })`: verify an ECDSA signature; malformed signature or key input returns false.
+- `await recover_public_key({ hash, signature })`: recover and validate a compressed public key from `(r, s, v)` and a 32-byte digest.
+
+## Private-key randomness
+
+`generate_private_key` uses rejection sampling and accepts only `1 <= d < n`; it never reduces candidates modulo `n`. A custom random source must return exactly the requested byte length and may be called repeatedly. Never use Math.random, timestamps, UUIDs, passwords, counters, device identifiers, or a general-purpose seeded PRNG for production keys. The package cannot measure or certify the entropy of caller-supplied bytes.
+
+## Standards and encodings
+
+- Curve and key encoding: SEC 1 and SEC 2 secp256k1.
+- Signature algorithm: ECDSA with RFC 6979 deterministic nonces.
+- Message digest helper: FIPS 180-4 SHA-256.
+- Signatures: object containing fixed-width 32-byte `r`, fixed-width 32-byte `s`, and recovery identifier `v` from 0 through 3.
+- Public keys returned by derivation and recovery: 33-byte compressed SEC 1 encoding.
+
+## Important integration rules
+
+- Hash and canonically serialize the protocol message before calling `sign`; `sign` expects a digest and does not hash it again.
+- Add protocol/domain separation and replay protection in the calling application.
+- Do not assume JavaScript BigInt operations are constant-time.
+- Do not describe this package as independently audited. Read SECURITY.md before using high-value or long-lived keys.
+- Do not add Graphene, BitShares, EOSIO, or Antelope compact-canonical retry rules here; those are protocol-specific policies outside standards-based ECDSA generation.

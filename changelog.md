@@ -1,5 +1,18 @@
 # Isomorphic-secp256k1-js
 
+## 5.0.2 - 2026-08-03
+
+### Documentation
+
+- Expanded the private-key generation guidance to distinguish native Web Crypto, caller-selected CSPRNGs, and validation of existing private keys.
+- Documented rejection sampling into `1 <= d < n`, the limits of entropy validation, weak-source failure modes, and requirements for custom random sources.
+- Added a focused randomness guide and a concise `llms.txt` API reference for package indexes, code-search tools, coding assistants, and other automated consumers.
+- Expanded npm keywords and package metadata for standards-based secp256k1, Web Crypto, entropy, TypeScript, and recoverable-signature discovery.
+
+### Fixed
+
+- Normalized repository text files to LF on every platform and configured Prettier to expect LF, preventing Windows GitHub Actions checkouts from reporting false formatting failures.
+
 ## 5.0.1 - 2026-08-03
 
 ### Security
