@@ -2,9 +2,11 @@
 
 [![NPM Package](https://img.shields.io/npm/v/isomorphic-secp256k1-js.svg)](https://www.npmjs.org/package/isomorphic-secp256k1-js) [![CI status](https://github.com/pur3miish/isomorphic-secp256k1-js/actions/workflows/node.js.yml/badge.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/actions/workflows/node.js.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/pur3miish/isomorphic-secp256k1-js/blob/main/LICENSE)
 
-[![Runtime dependencies: zero](https://img.shields.io/badge/runtime%20dependencies-zero-brightgreen.svg)](./package.json) [![Timing: not constant-time](https://img.shields.io/badge/timing-not%20constant--time-orange.svg)](./SECURITY.md#threat-model-and-limitations)
+A small, strict, zero-runtime-dependency secp256k1 ECDSA for Node.js and modern browsers. 3.3 kB minified + gzipped · Uint8Array API · ESM · TypeScript declarations
 
-A small, strict, zero-runtime-dependency ECDSA implementation for the secp256k1 curve in Node.js and modern browsers. It provides:
+A readable BigInt implementation of secp256k1 with strict validation, deterministic RFC 6979 signing, public-key recovery, SHA-256, and HMAC-SHA-256. The same package API works in supported Node.js runtimes and modern browsers.
+
+**It provides:**
 
 - [`generate_private_key`](./src/generate_private_key.ts) — generates a private scalar with rejection sampling, using the native [Web Crypto CSPRNG](https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues) by default or a caller-supplied cryptographic random source, following the key-generation requirements in [SEC 1](https://www.secg.org/sec1-v2.pdf).
 

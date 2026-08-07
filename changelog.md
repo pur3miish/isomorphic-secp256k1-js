@@ -1,5 +1,11 @@
 # Isomorphic-secp256k1-js
 
+## 5.0.3 - 2026-08-03
+
+### Changed
+
+- Updated the readme.
+
 ## 5.0.2 - 2026-08-03
 
 ### Documentation
