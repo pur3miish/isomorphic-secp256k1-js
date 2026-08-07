@@ -65,7 +65,7 @@ The implementation does not calculate `d mod n`. Rejection sampling preserves a 
 import { get_public_key, validate_private_key } from "isomorphic-secp256k1-js";
 
 validate_private_key(existing_private_key);
-const public_key = await get_public_key(existing_private_key);
+const public_key = get_public_key(existing_private_key);
 ```
 
 `validate_private_key` confirms that the value is an encoded secp256k1 private scalar. It does not prove where the key came from or estimate its entropy. `get_public_key` and `sign` repeat private-key validation internally.
