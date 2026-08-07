@@ -1,5 +1,29 @@
 # Isomorphic-secp256k1-js
 
+## 6.0.0 - 2026-08-07
+
+### Breaking
+
+- `get_public_key()` is now synchronous and returns `Uint8Array` directly instead of `Promise<Uint8Array>`.
+- `recover_public_key()` is now synchronous and returns `Uint8Array` directly instead of `Promise<Uint8Array>`.
+- `verify()` is now synchronous and returns `boolean` directly instead of `Promise<boolean>`.
+- Errors from these synchronous APIs are now thrown immediately rather than being surfaced as rejected Promises.
+- Callers using `await` remain compatible because JavaScript permits awaiting non-Promise values, but callers using `.then()`, `.catch()`, `Promise.all()`, or explicit `Promise<T>` typings for these functions must update their code.
+
+### Changed
+
+- Removed unnecessary `async` declarations from public-key derivation, ECDSA verification, and public-key recovery.
+- Removed unnecessary Promise and microtask creation from operations implemented entirely with synchronous secp256k1 arithmetic.
+- Updated tests and documentation to distinguish synchronous elliptic-curve operations from APIs that genuinely require asynchronous Web Crypto operations.
+
+### Unchanged
+
+- `generate_private_key()` remains asynchronous because caller-supplied random sources may return a `Promise<Uint8Array>`.
+- `sha256()` remains asynchronous because Web Crypto `subtle.digest()` is asynchronous.
+- `hmac_sha256()` remains asynchronous because Web Crypto key import and HMAC operations are asynchronous.
+- `sign()` remains asynchronous because RFC 6979 signing uses the asynchronous HMAC-SHA-256 implementation.
+- The package remains zero-runtime-dependency, native ESM, and compatible with its existing supported Node.js and browser environments.
+
 ## 5.0.3 - 2026-08-03
 
 ### Changed

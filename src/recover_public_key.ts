@@ -19,24 +19,32 @@ import {
 export interface RecoverArg {
   signature: Signature;
   hash: Uint8Array;
+
   /** Reject malleable high-S signatures. Defaults to true. */
   canonical?: boolean;
 }
 
-/** Recovers and verifies a compressed public key from a recoverable signature. */
+/**
+ * Recovers and verifies a compressed SEC 1 public key
+ * from a recoverable secp256k1 signature.
+ */
 function recover_public_key({
   hash,
   signature,
   canonical = true,
 }: RecoverArg): Uint8Array {
   validate_hash(hash);
+
   validate_signature(signature, {
     low_s: canonical,
     require_recovery: true,
   });
+
   const r = array_to_number(signature.r);
   const s = array_to_number(signature.s);
+
   const x = r + BigInt(signature.v >> 1) * secp256k1.n;
+
   if (x >= secp256k1.mod) {
     throw new RangeError(
       "signature recovery x-coordinate is outside the field.",
@@ -44,6 +52,7 @@ function recover_public_key({
   }
 
   const nonce_point = point_from_x(signature.v & 1, x);
+
   if (scalar_multiply(nonce_point, secp256k1.n) !== null) {
     throw new RangeError(
       "signature recovery point is not in the prime-order group.",
@@ -51,14 +60,18 @@ function recover_public_key({
   }
 
   const inverse = mul_inverse(r, secp256k1.n);
+
   const first = scalar_multiply(nonce_point, s);
+
   const second = negate(
     scalar_multiply({ x: secp256k1.x, y: secp256k1.y }, hash_to_scalar(hash)),
   );
+
   const public_point = scalar_multiply(
     add(first, second),
     get_mod(inverse, secp256k1.n),
   );
+
   if (
     public_point === null ||
     !is_on_curve(public_point) ||
@@ -66,6 +79,7 @@ function recover_public_key({
   ) {
     throw new Error("Recovered public key does not verify the signature.");
   }
+
   return encode_public_key(public_point);
 }
 
