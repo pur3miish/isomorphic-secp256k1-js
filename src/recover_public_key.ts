@@ -24,11 +24,11 @@ export interface RecoverArg {
 }
 
 /** Recovers and verifies a compressed public key from a recoverable signature. */
-async function recover_public_key({
+function recover_public_key({
   hash,
   signature,
   canonical = true,
-}: RecoverArg): Promise<Uint8Array> {
+}: RecoverArg): Uint8Array {
   validate_hash(hash);
   validate_signature(signature, {
     low_s: canonical,

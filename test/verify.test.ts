@@ -11,7 +11,7 @@ const private_key = number_to_array(42n);
 
 test("verifies valid signatures and rejects mutations", async () => {
   const hash = await sha256(new TextEncoder().encode("verify me"));
-  const public_key = await get_public_key(private_key);
+  const public_key = get_public_key(private_key);
   const signature = await sign({ private_key, hash });
   assert.equal(await verify({ hash, signature, public_key }), true);
 

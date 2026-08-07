@@ -14,12 +14,12 @@ export interface VerifyArgs {
 }
 
 /** Invalid signatures and public keys return false; an invalid hash throws. */
-async function verify({
+function verify({
   signature,
   hash,
   public_key,
   canonical = true,
-}: VerifyArgs): Promise<boolean> {
+}: VerifyArgs): boolean {
   validate_hash(hash);
   try {
     return verify_signature_point(

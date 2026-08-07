@@ -123,7 +123,7 @@ Applications may also supply an existing private key directly. `validate_private
 import { get_public_key, validate_private_key } from "isomorphic-secp256k1-js";
 
 validate_private_key(private_key);
-const public_key = await get_public_key(private_key);
+const public_key = get_public_key(private_key);
 ```
 
 Public-key derivation is deterministic: its internal random value is only 128-bit scalar blinding, which changes the calculation path without changing `Q = dG`. Signature generation uses RFC 6979, so the secret ECDSA nonce does not depend on runtime randomness by default. `sign({ extra_entropy: true })` can additionally hedge the deterministic nonce with 32 native random bytes.
