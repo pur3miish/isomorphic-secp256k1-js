@@ -15,15 +15,17 @@ const private_key =
 test("recovers and verifies the expected public key", async () => {
   const hash = await sha256(new TextEncoder().encode("recover me"));
   const signature = await sign({ private_key, hash });
+
   assert.deepEqual(
-    await recover_public_key({ hash, signature }),
-    await get_public_key(private_key),
+    recover_public_key({ hash, signature }),
+    get_public_key(private_key),
   );
 });
 
 test("supports high-S recovery only when explicitly requested", async () => {
   const hash = await sha256(new TextEncoder().encode("malleability check"));
   const low = await sign({ private_key, hash });
+
   const high = {
     r: low.r,
     s: number_to_array(
@@ -32,16 +34,22 @@ test("supports high-S recovery only when explicitly requested", async () => {
     v: low.v ^ 1,
   };
 
-  await assert.rejects(() => recover_public_key({ hash, signature: high }));
+  assert.throws(() => recover_public_key({ hash, signature: high }));
+
   assert.deepEqual(
-    await recover_public_key({ hash, signature: high, canonical: false }),
-    await get_public_key(private_key),
+    recover_public_key({
+      hash,
+      signature: high,
+      canonical: false,
+    }),
+    get_public_key(private_key),
   );
 });
 
 test("rejects invalid recovery IDs, scalars, hashes, and oversized fields", async () => {
   const hash = new Uint8Array(32);
   const valid = await sign({ private_key, hash });
+
   const invalid_signatures = [
     { ...valid, v: -1 },
     { ...valid, v: 4 },
@@ -53,9 +61,13 @@ test("rejects invalid recovery IDs, scalars, hashes, and oversized fields", asyn
   ];
 
   for (const signature of invalid_signatures) {
-    await assert.rejects(() => recover_public_key({ hash, signature }));
+    assert.throws(() => recover_public_key({ hash, signature }));
   }
-  await assert.rejects(() =>
-    recover_public_key({ hash: new Uint8Array(31), signature: valid }),
+
+  assert.throws(() =>
+    recover_public_key({
+      hash: new Uint8Array(31),
+      signature: valid,
+    }),
   );
 });
