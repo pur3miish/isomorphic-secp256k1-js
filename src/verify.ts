@@ -9,18 +9,25 @@ export interface VerifyArgs {
   signature: CompactSignature;
   hash: Uint8Array;
   public_key: Uint8Array;
+
   /** Reject malleable high-S signatures. Defaults to true. */
   canonical?: boolean;
 }
 
-/** Invalid signatures and public keys return false; an invalid hash throws. */
-async function verify({
+/**
+ * Verifies a secp256k1 ECDSA signature.
+ *
+ * Invalid signatures and public keys return false.
+ * An invalid hash throws.
+ */
+function verify({
   signature,
   hash,
   public_key,
   canonical = true,
-}: VerifyArgs): Promise<boolean> {
+}: VerifyArgs): boolean {
   validate_hash(hash);
+
   try {
     return verify_signature_point(
       hash,

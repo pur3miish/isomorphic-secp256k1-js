@@ -1,6 +1,6 @@
 {
   "name": "isomorphic-secp256k1-js",
-  "version": "5.0.3",
+  "version": "6.0.0",
   "description": "Zero-dependency secp256k1 ECDSA for Node.js and browsers, with native or caller-supplied CSPRNG key generation, RFC 6979 signing, verification, and recovery.",
   "repository": {
     "type": "git",

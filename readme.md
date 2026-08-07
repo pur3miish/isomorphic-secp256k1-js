@@ -24,7 +24,7 @@ A readable BigInt implementation of secp256k1 with strict validation, determinis
 
 - [`hmac_sha256`](./src/hmac_sha256.ts) — computes the HMAC-SHA-256 message authentication code defined by [RFC 2104](https://www.rfc-editor.org/rfc/rfc2104).
 
-Version 5 keeps the package's own readable `BigInt` implementation while correcting its scalar arithmetic, validation, encoding, signing, verification, and recovery behavior.
+Version 6 keeps the package's readable `BigInt` implementation while making public-key derivation, signature verification, and public-key recovery synchronous. APIs backed by asynchronous Web Crypto operations remain Promise-based.
 
 ## What the keys and signatures represent
 
@@ -123,7 +123,7 @@ Applications may also supply an existing private key directly. `validate_private
 import { get_public_key, validate_private_key } from "isomorphic-secp256k1-js";
 
 validate_private_key(private_key);
-const public_key = await get_public_key(private_key);
+const public_key = get_public_key(private_key);
 ```
 
 Public-key derivation is deterministic: its internal random value is only 128-bit scalar blinding, which changes the calculation path without changing `Q = dG`. Signature generation uses RFC 6979, so the secret ECDSA nonce does not depend on runtime randomness by default. `sign({ extra_entropy: true })` can additionally hedge the deterministic nonce with 32 native random bytes.
@@ -301,7 +301,7 @@ This function performs scalar multiplication `Q = dG`, where `d` is the private 
 ```js
 import { get_public_key } from "isomorphic-secp256k1-js";
 
-const public_key = await get_public_key(private_key); // Uint8Array(33)
+const public_key = get_public_key(private_key); // Uint8Array(33)
 ```
 
 ### `sign({ private_key, hash })` — deterministic ECDSA signing
@@ -340,8 +340,8 @@ Verification proves that the `(r, s)` signature is mathematically valid for the 
 ```js
 import { get_public_key, verify } from "isomorphic-secp256k1-js";
 
-const public_key = await get_public_key(private_key);
-const valid = await verify({ public_key, hash, signature }); // true
+const public_key = get_public_key(private_key);
+const valid = verify({ public_key, hash, signature }); // true
 ```
 
 Verification ignores the recovery identifier `v`. By default it rejects high-S signatures; pass `canonical: false` only when interoperating with a protocol that explicitly permits them.
@@ -353,7 +353,7 @@ Public-key recovery uses `(r, s, v)` and the exact digest to reconstruct the can
 ```js
 import { recover_public_key } from "isomorphic-secp256k1-js";
 
-const recovered_public_key = await recover_public_key({ hash, signature });
+const recovered_public_key = recover_public_key({ hash, signature });
 // Uint8Array(33), compressed SEC 1 encoding
 ```
 

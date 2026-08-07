@@ -17,14 +17,29 @@ test("generates valid private keys with native Web Crypto", async () => {
 
   assert.equal(first.length, 32);
   assert.equal(second.length, 32);
+
   validate_private_key(first);
   validate_private_key(second);
+
   assert.notDeepEqual(first, second);
 
   const hash = new Uint8Array(32).fill(9);
-  const public_key = await get_public_key(first);
-  const signature = await sign({ private_key: first, hash });
-  assert.equal(await verify({ public_key, hash, signature }), true);
+
+  const public_key = get_public_key(first);
+
+  const signature = await sign({
+    private_key: first,
+    hash,
+  });
+
+  assert.equal(
+    verify({
+      public_key,
+      hash,
+      signature,
+    }),
+    true,
+  );
 });
 
 test("supports a caller-selected random source with rejection sampling", async () => {
@@ -33,6 +48,7 @@ test("supports a caller-selected random source with rejection sampling", async (
     number_to_array(secp256k1.n),
     number_to_array(1n),
   ];
+
   const lengths: number[] = [];
 
   const private_key = await generate_private_key({
@@ -43,17 +59,21 @@ test("supports a caller-selected random source with rejection sampling", async (
   });
 
   assert.deepEqual(lengths, [32, 32, 32]);
+
   assert.deepEqual(private_key, number_to_array(1n));
 });
 
 test("copies caller-supplied random bytes before returning", async () => {
   const supplied = number_to_array(2n);
+
   const private_key = await generate_private_key({
     random_source: () => supplied,
   });
 
   assert.notEqual(private_key, supplied);
+
   supplied.fill(0);
+
   assert.deepEqual(private_key, number_to_array(2n));
 });
 
@@ -65,12 +85,18 @@ test("rejects malformed and persistently invalid random sources", async () => {
     }),
     /random_source must be a function/,
   );
+
   await assert.rejects(
-    generate_private_key({ random_source: () => new Uint8Array(31) }),
+    generate_private_key({
+      random_source: () => new Uint8Array(31),
+    }),
     /random_source result must be exactly 32 bytes/,
   );
+
   await assert.rejects(
-    generate_private_key({ random_source: () => new Uint8Array(32) }),
+    generate_private_key({
+      random_source: () => new Uint8Array(32),
+    }),
     /after 1024 attempts/,
   );
 });

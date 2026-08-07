@@ -31,11 +31,11 @@ This is an ESM-only package. Prefer static named imports. `sideEffects` is false
 
 - `await generate_private_key({ random_source? })`: generate a 32-byte private scalar. The default is native `globalThis.crypto.getRandomValues`; a synchronous or asynchronous caller-selected CSPRNG may be injected.
 - `validate_private_key(private_key)`: require exactly 32 bytes representing `1 <= d < n`. This validates structure and range, not entropy.
-- `await get_public_key(private_key)`: derive a compressed 33-byte SEC 1 public key.
+- `get_public_key(private_key)`: derive a compressed 33-byte SEC 1 public key.
 - `await sha256(data)`: return a 32-byte SHA-256 digest.
 - `await sign({ private_key, hash, canonical?, extra_entropy? })`: create an RFC 6979 ECDSA signature over an already-computed 32-byte digest. Low-S canonicalization is enabled by default.
-- `await verify({ public_key, hash, signature, canonical? })`: verify an ECDSA signature; malformed signature or key input returns false.
-- `await recover_public_key({ hash, signature })`: recover and validate a compressed public key from `(r, s, v)` and a 32-byte digest.
+- `verify({ public_key, hash, signature, canonical? })`: verify an ECDSA signature; malformed signature or key input returns false.
+- `recover_public_key({ hash, signature })`: recover and validate a compressed public key from `(r, s, v)` and a 32-byte digest.
 
 ## Private-key randomness
 
